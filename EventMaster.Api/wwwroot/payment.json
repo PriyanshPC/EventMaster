@@ -1,0 +1,95 @@
+﻿{
+  "card_details": [
+    {
+      "name_on_card": "Test User One",
+      "card_number": "12345678901111",
+      "exp": "09/27",
+      "cvv": "123",
+      "postal_code": "N2L3G1",
+      "amount_balance": 500.00
+    },
+    {
+      "name_on_card": "Test User Two",
+      "card_number": "12345678902222",
+      "exp": "11/27",
+      "cvv": "234",
+      "postal_code": "N2L3G1",
+      "amount_balance": 350.00
+    },
+    {
+      "name_on_card": "Test User Three",
+      "card_number": "12345678903333",
+      "exp": "12/27",
+      "cvv": "345",
+      "postal_code": "N2L3G1",
+      "amount_balance": 600.00
+    },
+    {
+      "name_on_card": "Test User Four",
+      "card_number": "12345678904242",
+      "exp": "10/27",
+      "cvv": "456",
+      "postal_code": "N2L3G1",
+      "amount_balance": 1000.00
+    },
+
+    {
+      "name_on_card": "Insufficient Balance Card",
+      "card_number": "12345678900000",
+      "exp": "01/26",
+      "cvv": "111",
+      "postal_code": "N2L3G1",
+      "amount_balance": 10.00
+    },
+    {
+      "name_on_card": "Wrong Details Card",
+      "card_number": "12345678909999",
+      "exp": "02/25",
+      "cvv": "222",
+      "postal_code": "N2L3G1",
+      "amount_balance": 9999.00
+    },
+    {
+      "name_on_card": "Wrong Details Card 2",
+      "card_number": "12345678908888",
+      "exp": "03/25",
+      "cvv": "333",
+      "postal_code": "N2L3G1",
+      "amount_balance": 9999.00
+    }
+  ],
+  "coupons": [
+    {
+      "code": "WELCOME10",
+      "type": "Percent",
+      "value": 10,
+      "min_amount": 30.00,
+      "is_active": true,
+      "expires_at": "2026-12-31"
+    },
+    {
+      "code": "FLAT15",
+      "type": "Fixed",
+      "value": 15.00,
+      "min_amount": 50.00,
+      "is_active": true,
+      "expires_at": "2026-12-31"
+    },
+    {
+      "code": "EXPIRED5",
+      "type": "Percent",
+      "value": 5,
+      "min_amount": 0.00,
+      "is_active": true,
+      "expires_at": "2025-01-01"
+    },
+    {
+      "code": "DISABLED20",
+      "type": "Percent",
+      "value": 20,
+      "min_amount": 0.00,
+      "is_active": false,
+      "expires_at": "2026-12-31"
+    }
+  ]
+}

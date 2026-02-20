@@ -1,0 +1,54 @@
+services:
+  db-mysql:
+    image: mysql:8.0
+    container_name: eventmaster-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eventmasterdb
+      MYSQL_USER: eventmaster
+      MYSQL_PASSWORD: eventmaster_pw
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./EventMaster.Api/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db-mysql", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  eventmaster-api:
+    build:
+      context: ./EventMaster.Api
+      dockerfile: Dockerfile
+    container_name: eventmaster-api
+    restart: unless-stopped
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8081
+      ConnectionStrings__Default: "Server=db-mysql;Port=3306;Database=eventmasterdb;User=eventmaster;Password=eventmaster_pw;"
+    ports:
+      - "8081:8081"
+
+  eventmaster-web:
+    build:
+      context: ./EventMaster.Web
+      dockerfile: Dockerfile
+    container_name: eventmaster-web
+    restart: unless-stopped
+    depends_on:
+      - eventmaster-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      Api__BaseUrl: "http://eventmaster-api:8081"
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:

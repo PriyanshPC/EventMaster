@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="EventMaster.Api/EventMaster.Api.csproj" />
+  <Project Path="EventMaster.Web/EventMaster.Web.csproj" Id="225da20d-019f-4ff7-863d-a70b48513490" />
+</Solution>
