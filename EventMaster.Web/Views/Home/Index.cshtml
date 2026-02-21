@@ -1,8 +1,171 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model EventMaster.Web.Models.LandingPageViewModel
+@{
+    ViewData["Title"] = "EventMaster";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container my-4">
+
+    <div class="d-flex align-items-end justify-content-between mb-3">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Popular near you</h2>
+            <div class="text-muted small">Browse trending events in your area</div>
+        </div>
+
+        <!-- Global: Always unfiltered -->
+        <a class="btn btn-primary" asp-controller="Events" asp-action="Index">See all events</a>
+    </div>
+
+    @foreach (var row in Model.Rows)
+    {
+        var rowId = $"row-{row.CategoryKey}";
+        <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="text-muted fw-bolder" style="text-transform: capitalize;">@row.CategoryName</div>
+                <!-- no per-row 'See all' here (per your requirement) -->
+            </div>
+
+            <div class="position-relative">
+                <!-- Left arrow (hidden initially by JS) -->
+                <button type="button"
+                        class="btn em-carousel-arrow position-absolute top-50 start-0 translate-middle-y"
+                        style="z-index: 5;"
+                        aria-label="Scroll left"
+                        data-slider-prev="@rowId">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <!-- Right arrow (hidden when end reached by JS) -->
+                <button type="button"
+                        class="btn em-carousel-arrow position-absolute top-50 end-0 translate-middle-y"
+                        style="z-index: 5;"
+                        aria-label="Scroll right"
+                        data-slider-next="@rowId">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+                <div id="@rowId" class="d-flex gap-3 overflow-auto em-hscroll px-5 py-2">
+                    @foreach (var e in row.Events)
+                    {
+                        <a class="em-card flex-shrink-0"
+                           asp-controller="Events"
+                           asp-action="Details"
+                           asp-route-eventId="@e.EventId"
+                           asp-route-occurrenceId="@e.OccurrenceId">
+                            <div class="em-card-img">
+                                <img src="@e.ImageUrl" alt="@e.Title" />
+                            </div>
+                            <div class="em-card-body">
+                                <div class="em-card-eyebrow">@row.CategoryName.ToUpper()</div>
+                                <div class="em-card-title">@e.Title</div>
+                                <div class="em-card-sub">@e.SubTitle</div>
+                            </div>
+                        </a>
+                    }
+
+                    <!-- End-cap CTA (filtered view) -->
+                    <div id="@rowId-endcap" class="flex-shrink-0 d-none" style="width: 260px;">
+                        <div class="em-endcap">
+                            <div class="fw-semibold mb-2">More @row.CategoryName?</div>
+                            <a class="btn btn-primary btn-sm"
+                               asp-controller="Events"
+                               asp-action="Index"
+                               asp-route-category="@row.CategoryName">
+                                View all @row.CategoryName
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const rightClicks = {};
+
+            function getScrollStep(container) {
+                const card = container.querySelector(".em-card");
+                if (!card) return 280;
+                const w = card.getBoundingClientRect().width;
+                return Math.max(260, Math.floor(w + 16));
+            }
+
+            function canScrollLeft(container) {
+                return container.scrollLeft > 2;
+            }
+
+            function canScrollRight(container) {
+                // allow small rounding
+                return container.scrollLeft + container.clientWidth < container.scrollWidth - 2;
+            }
+
+            function updateArrows(rowId) {
+                const container = document.getElementById(rowId);
+                if (!container) return;
+
+                const leftBtn = document.querySelector(`[data-slider-prev="${rowId}"]`);
+                const rightBtn = document.querySelector(`[data-slider-next="${rowId}"]`);
+
+                if (leftBtn) leftBtn.classList.toggle("d-none", !canScrollLeft(container));
+                if (rightBtn) rightBtn.classList.toggle("d-none", !canScrollRight(container));
+            }
+
+            function showEndCap(rowId) {
+                const endcap = document.getElementById(rowId + "-endcap");
+                if (endcap) endcap.classList.remove("d-none");
+            }
+
+            // Initial arrow state on load + on resize
+            function init() {
+                document.querySelectorAll("[id^='row-']").forEach(el => {
+                    if (el.classList.contains("em-hscroll")) {
+                        updateArrows(el.id);
+                    }
+                });
+            }
+
+            window.addEventListener("resize", init);
+
+            // Listen to scroll to update arrow visibility
+            document.addEventListener("scroll", function(e) {
+                const container = e.target;
+                if (container && container.classList && container.classList.contains("em-hscroll")) {
+                    updateArrows(container.id);
+                }
+            }, true);
+
+            document.addEventListener("click", function (e) {
+                const nextBtn = e.target.closest("[data-slider-next]");
+                const prevBtn = e.target.closest("[data-slider-prev]");
+
+                if (nextBtn) {
+                    const rowId = nextBtn.getAttribute("data-slider-next");
+                    const container = document.getElementById(rowId);
+                    if (!container) return;
+
+                    container.scrollLeft += getScrollStep(container);
+
+                    rightClicks[rowId] = (rightClicks[rowId] || 0) + 1;
+                    if (rightClicks[rowId] >= 5) showEndCap(rowId);
+
+                    // update arrow visibility after motion
+                    setTimeout(() => updateArrows(rowId), 80);
+                }
+
+                if (prevBtn) {
+                    const rowId = prevBtn.getAttribute("data-slider-prev");
+                    const container = document.getElementById(rowId);
+                    if (!container) return;
+
+                    container.scrollLeft -= getScrollStep(container);
+                    setTimeout(() => updateArrows(rowId), 80);
+                }
+            });
+
+            // run once
+            setTimeout(init, 0);
+        })();
+    </script>
+}

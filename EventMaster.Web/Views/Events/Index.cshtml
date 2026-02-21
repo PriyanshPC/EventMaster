@@ -1,0 +1,157 @@
+﻿@model EventMaster.Web.Models.AllEventsViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+
+    var todayIso = DateTime.Today.ToString("yyyy-MM-dd");
+    var selectedIso = Model.DateFrom is null ? "" : Model.DateFrom.Value.ToString("yyyy-MM-dd");
+}
+
+<div class="container my-4">
+
+    <form id="filtersForm" method="get" class="pb-4">
+        <div class="em-searchbar input-group">
+
+            <!-- Location: type-ahead; must select from dropdown -->
+            <div class="em-searchcell">
+                <div class="em-searchlabel"><i class="bi bi-geo-alt"></i> LOCATION</div>
+                <select id="locationSelect" class="form-select em-input" name="location">
+                    <option value="" selected="@(string.IsNullOrWhiteSpace(Model.Location) ? "selected" : null)">All Locations</option>
+                    @foreach (var loc in Model.Locations)
+                    {
+                        <option value="@loc" selected="@(string.Equals(Model.Location ?? "", loc, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">
+                            @loc
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="vr"></div>
+
+            <!-- DateFrom: calendar; past dates disabled; auto-filter -->
+            <div class="em-searchcell">
+                <div class="em-searchlabel"><i class="bi bi-calendar3"></i> FROM</div>
+                <input id="dateFromInput"
+                       type="date"
+                       class="form-control em-input"
+                       name="dateFrom"
+                       min="@todayIso"
+                       value="@selectedIso" />
+            </div>
+
+            <div class="vr"></div>
+
+            <!-- Category: auto-filter -->
+            <div class="em-searchcell">
+                <div class="em-searchlabel">CATEGORY</div>
+                <select id="categorySelect" class="form-select em-input" name="category" style="text-transform: capitalize">
+                    @foreach (var c in Model.Categories)
+                    {
+                        <option value="@c.Value"
+                                selected="@(string.Equals(Model.Category ?? "", c.Value ?? "", StringComparison.OrdinalIgnoreCase) ? "selected" : null)" style="text-transform: capitalize">
+                            @c.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="vr"></div>
+
+            <!-- Search: event name only; requires button -->
+            <div class="em-searchcell em-grow">
+                <div class="em-searchlabel"><i class="bi bi-search"></i> SEARCH</div>
+                <input id="qInput"
+                       class="form-control em-input"
+                       name="q"
+                       value="@Model.Q"
+                       placeholder="Event name only" />
+            </div>
+
+            <button class="btn-primary em-searchbtn" type="submit">Search</button>
+        </div>
+    </form>
+
+    <div class="d-flex align-items-end justify-content-between mb-3">
+        <div>
+            <h1 class="h4 fw-bold mb-1">@Model.PageTitle</h1>
+            <div class="text-muted small">@Model.Events.Count event(s)</div>
+        </div>
+    </div>
+
+    @if (Model.Events.Count == 0)
+    {
+        <div class="alert alert-light border">
+            No events found. Try changing location/date/category, or search by event name.
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var e in Model.Events)
+            {
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                    <a class="em-card d-block h-100 w-100"
+                       asp-controller="Events"
+                       asp-action="Details"
+                       asp-route-eventId="@e.EventId"
+                       asp-route-occurrenceId="@e.OccurrenceId">
+                        <div class="em-card-img">
+                            <img src="@e.ImageUrl" alt="@e.Title" />
+                        </div>
+                        <div class="em-card-body">
+                            <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
+                            <div class="em-card-title">@e.Title</div>
+                            <div class="em-card-sub">@e.SubTitle</div>
+                            <div class="em-card-sub">@e.VenueLine</div>
+
+                            <div class="mt-2 fw-semibold">$@e.Price</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const form = document.getElementById("filtersForm");
+            const locationSelect = document.getElementById("locationSelect");
+                locationSelect?.addEventListener("change", () => form.submit());
+            const dateFromInput = document.getElementById("dateFromInput");
+            const categorySelect = document.getElementById("categorySelect");
+            const datalist = document.getElementById("locationOptions");
+            const qInput = document.getElementById("qInput");
+
+            function isInDatalist(value) {
+                if (!value) return true; // allow empty
+                const opts = datalist.querySelectorAll("option");
+                for (const o of opts) {
+                    if (o.value.toLowerCase() === value.toLowerCase()) return true;
+                }
+                return false;
+            }
+
+            // Date & category: filter immediately
+            dateFromInput?.addEventListener("change", () => form.submit());
+            categorySelect?.addEventListener("change", () => form.submit());
+
+            // Location: only submit if value matches list option
+            locationInput?.addEventListener("change", () => {
+                if (!isInDatalist(locationInput.value)) {
+                    locationInput.value = "";
+                    return;
+                }
+                form.submit();
+            });
+
+            // Blur guard: if user typed invalid location, clear it
+            locationInput?.addEventListener("blur", () => {
+                if (!isInDatalist(locationInput.value)) locationInput.value = "";
+            });
+
+            // IMPORTANT: search input should NOT auto-submit on typing.
+            // Only submit when user clicks Search (form submit).
+        })();
+    </script>
+}
