@@ -119,55 +119,6 @@ body {
         filter: brightness(.97);
     }
 
-/* Mobile: stack search nicely */
-@media (max-width: 767.98px) {
-    .em-header {
-        padding: 0px 25px;
-    }
-
-    .em-brand-title {
-        font-size: 26px;
-    }
-
-    .em-brand-inc {
-        font-size: 20px;
-    }
-
-    .em-signin .text {
-        display: none;
-    }
-
-    .em-signin {
-        padding: 6px 6px;
-    }
-
-        .em-signin .icon {
-            font-size: 28px;
-        }
-
-    .em-searchbar {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-        .em-searchbar .vr {
-            display: none;
-        }
-
-    .em-searchcell, .em-grow {
-        min-width: auto;
-    }
-
-    .em-searchbtn {
-        margin-left: 0;
-        padding: 10px 16px;
-    }
-
-    .em-card {
-        width: 100%;
-    }
-}
-
 /* ===== Horizontal carousel styling ===== */
 .em-hscroll {
     scroll-behavior: smooth;
@@ -300,3 +251,153 @@ body {
     .em-reply .small {
         font-size: 0.82rem;
     }
+
+/* ==== Login Page ==== */
+.em-auth-card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* Two-column layout */
+.em-auth-col {
+    background: #fff;
+}
+
+/* Divider line between login/register (desktop) */
+.em-auth-col-left {
+    border-right: 1px solid rgba(0,0,0,0.08);
+}
+
+@media (max-width: 991.98px) {
+    .em-auth-col-left {
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+}
+
+.em-auth-inner {
+    padding: 36px 34px;
+}
+
+@media (max-width: 575.98px) {
+    .em-auth-inner {
+        padding: 28px 20px;
+    }
+}
+
+/* Titles/subtitles */
+.em-auth-title {
+    font-weight: 800;
+    font-size: 26px;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+.em-auth-subtitle {
+    color: #6b7280;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+/* Labels/inputs */
+.em-auth-label {
+    font-weight: 700;
+    font-size: 13px;
+    color: #374151;
+}
+
+.em-auth-input {
+    height: 46px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+}
+
+    .em-auth-input:focus {
+        border-color: #0b5ed7;
+        box-shadow: 0 0 0 0.2rem rgba(11, 94, 215, 0.20);
+    }
+
+/* Buttons */
+.em-auth-btn {
+    height: 46px;
+    border-radius: 6px;
+    font-weight: 800;
+}
+
+.em-auth-btn-outline {
+    height: 46px;
+    border-radius: 6px;
+    font-weight: 800;
+}
+
+/* Alerts */
+.em-auth-alert {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Footnote */
+.em-auth-footnote {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+
+/* Mobile: stack search nicely */
+@media (max-width: 767.98px) {
+    .em-header {
+        padding: 0px 25px;
+    }
+
+    .em-brand-title {
+        font-size: 26px;
+    }
+
+    .em-brand-inc {
+        font-size: 20px;
+    }
+
+    .em-signin .text {
+        display: none;
+    }
+
+    .em-signin {
+        padding: 6px 6px;
+    }
+
+        .em-signin .icon {
+            font-size: 28px;
+        }
+
+    .em-searchbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .em-searchbar .vr {
+            display: none;
+        }
+
+    .em-searchcell, .em-grow {
+        min-width: auto;
+    }
+
+    .em-searchbtn {
+        margin-left: 0;
+        padding: 10px 16px;
+    }
+
+    .em-card {
+        width: 100%;
+    }
+
+    .login-divider::before {
+        display: none;
+    }
+}
