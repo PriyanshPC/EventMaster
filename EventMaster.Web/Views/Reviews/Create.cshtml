@@ -1,0 +1,41 @@
+@model EventMaster.Web.Models.ReviewCreatePageViewModel
+@{ ViewData["Title"] = "Add Review"; }
+<div class="container my-4">
+    <div class="card mb-4"><div class="card-body">
+        <h1 class="h4">@Model.Details.EventName</h1>
+        <div class="text-muted">@Model.HeaderWhen • @Model.HeaderWhere</div>
+    </div></div>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-6">
+            <div class="card"><div class="card-body">
+                <h2 class="h5">Reviews</h2>
+                @if (!Model.Reviews.Any()) { <p class="text-muted">No reviews yet.</p> }
+                @foreach (var r in Model.Reviews.OrderByDescending(x => x.CreatedAt))
+                {
+                    <div class="border rounded p-2 mb-2">
+                        <div class="fw-semibold">@r.CustomerName</div>
+                        <div>@string.Concat(Enumerable.Repeat("★", r.Rating))@string.Concat(Enumerable.Repeat("☆", 5-r.Rating))</div>
+                        <div>@r.Comment</div>
+                        @if (r.Replies?.Count > 0){foreach(var rep in r.Replies){<div class="small text-muted mt-1">Reply: @rep.ReplyText</div>}}
+                    </div>
+                }
+            </div></div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card"><div class="card-body">
+                <h2 class="h5">Write a review</h2>
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="eventId" value="@Model.EventId" />
+                    <input type="hidden" name="occurrenceId" value="@Model.OccurrenceId" />
+                    <label class="form-label">Rating (1-5)</label>
+                    <input class="form-control" type="number" min="1" max="5" asp-for="Input.Rating" />
+                    <label class="form-label mt-2">Review</label>
+                    <textarea class="form-control" asp-for="Input.Comment"></textarea>
+                    <button class="btn btn-primary mt-3" type="submit">Submit Review</button>
+                </form>
+            </div></div>
+        </div>
+    </div>
+</div>

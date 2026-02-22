@@ -10,7 +10,7 @@ namespace EventMaster.Api.Controllers;
 
 [ApiController]
 [Route("api/bookings")]
-[Authorize(Roles = "CUSTOMER")]
+[Authorize(Roles = "CUSTOMER,ORGANIZER")]
 public class BookingsController : ControllerBase
 {
     private readonly EventMasterDbContext _db;

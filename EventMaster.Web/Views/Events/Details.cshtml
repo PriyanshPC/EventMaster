@@ -30,6 +30,7 @@
                         <a class="btn btn-primary"
                            asp-controller="Bookings"
                            asp-action="Create"
+                           asp-route-eventId="@Model.EventId"
                            asp-route-occurrenceId="@Model.OccurrenceId">
                             Book Ticket
                         </a>
@@ -62,7 +63,8 @@
                     <a class="btn btn-outline-primary btn-sm"
                        asp-controller="Reviews"
                        asp-action="Create"
-                       asp-route-eventId="@Model.EventId">
+                       asp-route-eventId="@Model.EventId"
+                       asp-route-occurrenceId="@Model.OccurrenceId">
                         Add Review
                     </a>
                 }
