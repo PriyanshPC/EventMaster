@@ -16,7 +16,6 @@ public class MeSettingsViewModel
     public string Username { get; set; } = "";
     public string Email { get; set; } = "";
     public string? Phone { get; set; }
-    public string EditMode { get; set; } = "";
 }
 
 public class DashboardBookingCardViewModel

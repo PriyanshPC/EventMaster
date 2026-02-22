@@ -155,6 +155,10 @@ body {
     width: 250px;
 }
 
+
+.em-card-sm {
+    width: 228px;
+}
 .em-card-img img {
     width: 100%;
     height: 100%;
