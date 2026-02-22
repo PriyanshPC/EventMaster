@@ -236,6 +236,7 @@ public class BookingsController : ControllerBase
             EventId = details.Event.event_id,
             OccurrenceId = details.Occurrence.occurrence_id,
             EventName = details.Event.name,
+            Image = details.Event.image,
             Status = details.Occurrence.status,
             Date = details.Occurrence.date,
             Time = details.Occurrence.time,

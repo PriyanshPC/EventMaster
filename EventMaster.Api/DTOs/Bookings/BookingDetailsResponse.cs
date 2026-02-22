@@ -6,6 +6,7 @@ public class BookingDetailsResponse
     public int EventId { get; set; }
     public int OccurrenceId { get; set; }
     public string EventName { get; set; } = "";
+    public string Image { get; set; } = "";
     public string Status { get; set; } = "";
     public DateOnly Date { get; set; }
     public TimeOnly Time { get; set; }

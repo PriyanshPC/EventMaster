@@ -6,6 +6,7 @@ public class BookingDetailsViewModel
     public int EventId { get; set; }
     public int OccurrenceId { get; set; }
     public string EventName { get; set; } = "";
+    public string? Image { get; set; }
     public string Status { get; set; } = "";
     public string DateTimeLine { get; set; } = "";
     public string VenueLine { get; set; } = "";

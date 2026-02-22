@@ -3,6 +3,7 @@ using EventMaster.Web.Services;
 using EventMaster.Web.Services.ApiDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
 
 namespace EventMaster.Web.Controllers;
@@ -77,6 +78,7 @@ public class DashboardController : Controller
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
+        var apiBase = (_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
         var details = await _bookingsApi.GetBookingDetailsAsync(bookingId, jwt);
         if (details is null) return NotFound();
 
@@ -86,6 +88,7 @@ public class DashboardController : Controller
             EventId = details.EventId,
             OccurrenceId = details.OccurrenceId,
             EventName = details.EventName,
+            Image = $"{apiBase}/api/events/{details.EventId}/image",
             Status = details.Status,
             DateTimeLine = $"{details.Date:MMM d, yyyy} • {DateTime.Today.Add(details.Time.ToTimeSpan()):hh:mm tt}",
             VenueLine = $"{details.VenueName}, {details.VenueAddress}, {details.VenueCity}, {details.VenueProvince}",
@@ -101,7 +104,6 @@ public class DashboardController : Controller
 
         return View(vm);
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelBooking(int bookingId)
