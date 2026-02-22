@@ -8,6 +8,10 @@ public class BookingDetailsResponse
     public string EventName { get; set; } = "";
     public string Image { get; set; } = "";
     public string Status { get; set; } = "";
+    public string BookingStatus { get; set; } = "";
+    public bool CanCancel { get; set; }
+    public decimal? RefundedAmount { get; set; }
+    public bool IsRefundPending { get; set; }
     public DateOnly Date { get; set; }
     public TimeOnly Time { get; set; }
     public string VenueName { get; set; } = "";

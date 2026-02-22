@@ -16,6 +16,11 @@ public class BookingDetailsViewModel
     public decimal TotalAmount { get; set; }
     public string TicketNumber { get; set; } = "";
     public bool CanCancel { get; set; }
+    public bool IsPastBooking { get; set; }
+    public bool ShowAddReviewButton { get; set; }
+    public string? AddReviewUrl { get; set; }
+    public decimal? RefundedAmount { get; set; }
+    public bool IsRefundPending { get; set; }
     public string? Message { get; set; }
     public string? Error { get; set; }
 }
