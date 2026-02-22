@@ -148,6 +148,7 @@ public class ReviewController : ControllerBase
                 CreatedAt = x.created_at,
                 Replies = x.replies
                     .OrderBy(z => z.created_at)
+                    .ThenBy(z => z.reply_id)
                     .Select(z => new ReplyResponse
                     {
                         ReplyId = z.reply_id,
@@ -184,6 +185,7 @@ public class ReviewController : ControllerBase
             .AsNoTracking()
             .Where(r => r.occurrence.event_id == eventId)
             .OrderByDescending(r => r.created_at)
+            .ThenByDescending(r => r.review_id)
             .Select(r => new ReviewResponse
             {
                 ReviewId = r.review_id,
@@ -196,6 +198,7 @@ public class ReviewController : ControllerBase
                 CreatedAt = r.created_at,
                 Replies = r.replies
                     .OrderBy(x => x.created_at)
+                    .ThenBy(x => x.reply_id)
                     .Select(x => new ReplyResponse
                     {
                         ReplyId = x.reply_id,
