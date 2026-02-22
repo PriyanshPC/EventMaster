@@ -1,119 +1,229 @@
 @model EventMaster.Web.Models.CustomerDashboardViewModel
 @{
     ViewData["Title"] = "Customer Dashboard";
-    var isEditEmail = Model.Settings.EditMode == "email";
-    var isEditPhone = Model.Settings.EditMode == "phone";
-    var isEditPassword = Model.Settings.EditMode == "password";
-    var hasEditMode = isEditEmail || isEditPhone || isEditPassword;
+    var bookingsActive = Model.ActiveTab != "settings";
+    var settingsActive = Model.ActiveTab == "settings";
+
+    string StatusTextClass(string? status)
+    {
+        return status?.Trim().ToLowerInvariant() switch
+        {
+            "confirmed" => "text-success",
+            "scheduled" => "text-success",
+            "cancelled" => "text-danger",
+            "completed" => "text-secondary",
+            _ => "text-primary"
+        };
+    }
+
+    string StatusLabel(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status)) return "Unknown";
+        return status.Trim();
+    }
 }
 
 <div class="container my-4">
     <h1 class="h4 fw-bold mb-3">Customer Dashboard</h1>
 
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item"><a class="nav-link @(Model.ActiveTab == "bookings" ? "active" : "")" href="@Url.Action("Customer", new { tab = "bookings" })">Bookings</a></li>
-        <li class="nav-item"><a class="nav-link @(Model.ActiveTab == "settings" ? "active" : "")" href="@Url.Action("Customer", new { tab = "settings" })">Settings</a></li>
+    <ul class="nav nav-tabs mb-4" id="customerDashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(bookingsActive ? "active" : "")"
+                    id="bookings-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#bookings-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="bookings-pane"
+                    aria-selected="@(bookingsActive ? "true" : "false")">
+                Bookings
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(settingsActive ? "active" : "")"
+                    id="settings-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#settings-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="settings-pane"
+                    aria-selected="@(settingsActive ? "true" : "false")">
+                Settings
+            </button>
+        </li>
     </ul>
 
-    @if (Model.ActiveTab == "settings")
-    {
-        <div class="card p-3">
-            <div class="mb-2"><strong>Name:</strong> @Model.Settings.Name</div>
-            <div class="mb-3"><strong>Username:</strong> @Model.Settings.Username</div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <form asp-action="UpdateEmail" method="post" class="d-flex gap-2">
-                        @Html.AntiForgeryToken()
-                        <input class="form-control" name="email" value="@Model.Settings.Email" @(isEditEmail ? null : "readonly") />
-                        <input class="form-control" type="password" name="currentPassword" placeholder="Current Password" @(isEditEmail ? null : "disabled") required />
-                        @if (!isEditEmail)
-                        {
-                            <a class="btn btn-outline-primary @(hasEditMode ? "disabled" : "")" href="@Url.Action("Customer", new { tab = "settings", edit = "email" })">Edit</a>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary" type="submit">Save</button>
-                        }
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Phone</label>
-                    <form asp-action="UpdatePhone" method="post" class="d-flex gap-2">
-                        @Html.AntiForgeryToken()
-                        <input class="form-control" name="phone" value="@Model.Settings.Phone" @(isEditPhone ? null : "readonly") />
-                        <input class="form-control" type="password" name="currentPassword" placeholder="Current Password" @(isEditPhone ? null : "disabled") required />
-                        @if (!isEditPhone)
-                        {
-                            <a class="btn btn-outline-primary @(hasEditMode ? "disabled" : "")" href="@Url.Action("Customer", new { tab = "settings", edit = "phone" })">Edit</a>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary" type="submit">Save</button>
-                        }
-                    </form>
-                </div>
+    <div class="tab-content" id="customerDashboardTabContent">
+        <div class="tab-pane fade @(bookingsActive ? "show active" : "")" id="bookings-pane" role="tabpanel" aria-labelledby="bookings-tab" tabindex="0">
+            <h2 class="h5">Upcoming</h2>
+            <div class="row g-3 mb-4">
+                @if (Model.UpcomingBookings.Count == 0)
+                {
+                    <div class="alert alert-info mb-0" role="alert">No upcoming bookings.</div>
+                }
+                @foreach (var e in Model.UpcomingBookings)
+                {
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                        <a class="em-card em-card-sm d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
+                            <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
+                            <div class="em-card-body">
+                                <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
+                                <div class="em-card-title">@e.Name</div>
+                                <div class="em-card-sub">@e.SubTitle</div>
+                                <div class="em-card-sub">@e.VenueLine</div>
+                                <div class="mt-2 fw-bold @StatusTextClass(e.Status)">Status: @StatusLabel(e.Status)</div>
+                            </div>
+                        </a>
+                    </div>
+                }
             </div>
 
-            <h2 class="h6">Change Password</h2>
-            <form asp-action="ChangePassword" method="post" class="row g-2">
-                @Html.AntiForgeryToken()
-                <div class="col-md-4"><input class="form-control" type="password" name="currentPassword" placeholder="Current Password" required /></div>
-                <div class="col-md-4"><input class="form-control" type="password" name="newPassword" placeholder="New Password" @(hasEditMode && !isEditPassword ? "disabled" : null) required /></div>
-                <div class="col-md-4"><input class="form-control" type="password" name="confirmPassword" placeholder="Confirm Password" @(hasEditMode && !isEditPassword ? "disabled" : null) required /></div>
-                <div class="col-12">
-                    <button class="btn btn-outline-primary" type="submit" @(hasEditMode && !isEditPassword ? "disabled" : null)>Update Password</button>
-                </div>
-            </form>
-        </div>
-    }
-    else
-    {
-        <h2 class="h5">Upcoming</h2>
-        <div class="row g-3 mb-4">
-            @if (Model.UpcomingBookings.Count == 0)
-            {
-                <div class="text-muted">No upcoming bookings.</div>
-            }
-            @foreach (var e in Model.UpcomingBookings)
-            {
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                    <a class="em-card d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
-                        <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
-                        <div class="em-card-body">
-                            <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
-                            <div class="em-card-title">@e.Name</div>
-                            <div class="em-card-sub">@e.SubTitle</div>
-                            <div class="em-card-sub">@e.VenueLine</div>
-                            <div class="em-card-sub fw-bold">@e.Status</div>
-                        </div>
-                    </a>
-                </div>
-            }
+            <h2 class="h5">Past</h2>
+            <div class="row g-3">
+                @if (Model.PastBookings.Count == 0)
+                {
+                    <div class="alert alert-secondary mb-0" role="alert">No past bookings.</div>
+                }
+                @foreach (var e in Model.PastBookings)
+                {
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                        <a class="em-card em-card-sm d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
+                            <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
+                            <div class="em-card-body">
+                                <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
+                                <div class="em-card-title">@e.Name</div>
+                                <div class="em-card-sub">@e.SubTitle</div>
+                                <div class="em-card-sub">@e.VenueLine</div>
+                                <div class="mt-2 fw-bold @StatusTextClass(e.Status)">Status: @StatusLabel(e.Status)</div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
 
-        <h2 class="h5">Past</h2>
-        <div class="row g-3">
-            @if (Model.PastBookings.Count == 0)
-            {
-                <div class="text-muted">No past bookings.</div>
-            }
-            @foreach (var e in Model.PastBookings)
-            {
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                    <a class="em-card d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
-                        <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
-                        <div class="em-card-body">
-                            <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
-                            <div class="em-card-title">@e.Name</div>
-                            <div class="em-card-sub">@e.SubTitle</div>
-                            <div class="em-card-sub">@e.VenueLine</div>
-                            <div class="em-card-sub fw-bold">@e.Status</div>
+        <div class="tab-pane fade @(settingsActive ? "show active" : "")" id="settings-pane" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
+            <div class="card p-3">
+                <div class="mb-2"><strong>Name:</strong> @Model.Settings.Name</div>
+                <div class="mb-3"><strong>Username:</strong> @Model.Settings.Username</div>
+
+                <form asp-action="UpdateProfile" method="post" class="row g-3" id="profileUpdateForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <div class="input-group">
+                            <input id="email" class="form-control" name="email" value="@Model.Settings.Email" readonly required />
+                            <button class="btn btn-outline-primary" type="button" data-mode="email" title="Edit email">
+                                <i class="bi bi-pencil"></i>
+                            </button>
                         </div>
-                    </a>
-                </div>
-            }
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone</label>
+                        <div class="input-group">
+                            <input id="phone" class="form-control" name="phone" value="@Model.Settings.Phone" readonly />
+                            <button class="btn btn-outline-primary" type="button" data-mode="phone" title="Edit phone">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label for="newPassword" class="form-label mb-0">New Password</label>
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-mode="password" title="Edit password">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                        <input id="newPassword" class="form-control mt-2" type="password" name="newPassword" placeholder="Leave blank to keep" disabled />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="If changing password" disabled />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input id="currentPassword" class="form-control" type="password" name="currentPassword" placeholder="Required for any changes" required />
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-success" type="submit">Update Profile</button>
+                        <button class="btn btn-outline-secondary" type="button" id="clearEditModeBtn">Clear Edit Mode</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    }
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
+            const clearBtn = document.getElementById('clearEditModeBtn');
+
+            if (!emailInput || !phoneInput || !newPasswordInput || !confirmPasswordInput || modeButtons.length === 0) {
+                return;
+            }
+
+            let activeMode = null;
+
+            function setButtonState(button, isActive) {
+                button.classList.toggle('btn-primary', isActive);
+                button.classList.toggle('btn-outline-primary', !isActive);
+            }
+
+            function applyMode(mode) {
+                activeMode = mode;
+
+                emailInput.readOnly = mode !== 'email';
+                phoneInput.readOnly = mode !== 'phone';
+                newPasswordInput.disabled = mode !== 'password';
+                confirmPasswordInput.disabled = mode !== 'password';
+
+                if (mode !== 'password') {
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                }
+
+                modeButtons.forEach(btn => {
+                    const isActive = btn.dataset.mode === mode;
+                    const shouldDisable = mode !== null && !isActive;
+                    btn.disabled = shouldDisable;
+                    setButtonState(btn, isActive);
+                });
+
+                if (mode === 'email') {
+                    emailInput.focus();
+                } else if (mode === 'phone') {
+                    phoneInput.focus();
+                } else if (mode === 'password') {
+                    newPasswordInput.focus();
+                }
+            }
+
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    if (activeMode === mode) {
+                        applyMode(null);
+                        return;
+                    }
+
+                    applyMode(mode);
+                });
+            });
+
+            clearBtn?.addEventListener('click', () => applyMode(null));
+            applyMode(null);
+        })();
+    </script>
+}
