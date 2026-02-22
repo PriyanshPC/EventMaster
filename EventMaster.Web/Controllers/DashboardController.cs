@@ -187,8 +187,8 @@ public class DashboardController : Controller
         var profileResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
         {
             CurrentPassword = currentPassword,
-            Email = emailChanged ? normalizedEmail : me.Email,
-            Phone = phoneChanged ? normalizedPhone : me.Phone
+            Email = emailChanged ? normalizedEmail : string.Empty,
+            Phone = phoneChanged ? normalizedPhone : string.Empty
         }, jwt);
 
         SetNotification(profileResult.Message ?? (profileResult.Success ? "Profile updated successfully." : "Unable to update profile."), profileResult.Success ? "success" : "danger");
