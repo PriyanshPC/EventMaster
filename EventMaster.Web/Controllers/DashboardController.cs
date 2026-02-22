@@ -45,7 +45,7 @@ public class DashboardController : Controller
                 OccurrenceId = c.OccurrenceId,
                 Name = c.Name,
                 Category = c.Category,
-                Status = c.BookingStatus,
+                Status = (c.BookingStatus == "Confirmed" && c.Status == "Completed") ? c.Status : c.BookingStatus,
                 SubTitle = $"{c.Date:MMM d} • {DateTime.Today.Add(c.Time.ToTimeSpan()):hh:mm tt}",
                 VenueLine = $"{c.VenueName} • {c.VenueCity}",
                 ImageUrl = $"{apiBase}/api/events/{c.EventId}/image"
