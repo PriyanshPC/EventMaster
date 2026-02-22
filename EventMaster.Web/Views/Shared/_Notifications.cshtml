@@ -5,7 +5,7 @@
     var delay = TempData["Notification.Delay"] as int? ?? 5000;
 }
 
-<div id="em-toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
+<div id="em-toast-container" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1080;"></div>
 
 @if (!string.IsNullOrWhiteSpace(message))
 {
