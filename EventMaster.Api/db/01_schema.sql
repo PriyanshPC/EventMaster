@@ -199,7 +199,6 @@ CREATE TABLE reviews (
 
   CHECK (rating >= 1 AND rating <= 5),
 
-  UNIQUE KEY uq_review_once (occurrence_id, customer_id),
   KEY idx_review_occ (occurrence_id),
   KEY idx_review_customer (customer_id)
 ) ENGINE=InnoDB;

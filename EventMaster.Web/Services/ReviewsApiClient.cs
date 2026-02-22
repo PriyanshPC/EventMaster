@@ -1,16 +1,21 @@
-﻿using EventMaster.Web.Services.ApiDtos;
+using EventMaster.Web.Services.ApiDtos;
+using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
 
 namespace EventMaster.Web.Services;
 
 public class ReviewsApiClient
 {
     private readonly HttpClient _http;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ReviewsApiClient(HttpClient http)
+    public ReviewsApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor)
     {
         _http = http;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<List<ReviewResponse>> GetForEventAsync(int eventId)
@@ -22,7 +27,15 @@ public class ReviewsApiClient
 
     public async Task<ReviewEligibilityResponse?> GetEligibilityAsync(int eventId)
     {
-        var response = await _http.GetAsync($"/api/reviews/eligibility/{eventId}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/reviews/eligibility/{eventId}");
+
+        var jwt = _httpContextAccessor.HttpContext?.User.FindFirstValue("access_token");
+        if (!string.IsNullOrWhiteSpace(jwt))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        }
+
+        var response = await _http.SendAsync(request);
         if (response.StatusCode == HttpStatusCode.Forbidden || response.StatusCode == HttpStatusCode.Unauthorized)
             return new ReviewEligibilityResponse { CanAddReview = false };
 

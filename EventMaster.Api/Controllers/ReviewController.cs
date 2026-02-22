@@ -23,9 +23,7 @@ public class ReviewController : ControllerBase
 
     // =========================
     // 1) POST /api/reviews
-    // Customer can review ONLY if:
-    // - They attended any completed occurrence of the event
-    // - They have not already reviewed that attended occurrence
+    // Customer can review ONLY if they attended any completed occurrence of the event
     // =========================
     [HttpPost]
     [Authorize(Roles = "CUSTOMER")]
@@ -48,7 +46,7 @@ public class ReviewController : ControllerBase
 
         var eligibleOccurrenceId = await FindEligibleOccurrenceIdAsync(req.EventId, myUserId);
         if (eligibleOccurrenceId == null)
-            return StatusCode(403, new { message = "Only customers who attended a completed event occurrence can review it once." });
+            return StatusCode(403, new { message = "Only customers who attended a completed event occurrence can review." });
 
         var entity = new review
         {
@@ -67,7 +65,7 @@ public class ReviewController : ControllerBase
         }
         catch (DbUpdateException)
         {
-            return Conflict(new { message = "You have already reviewed all completed occurrences you attended for this event." });
+            return Conflict(new { message = "Review could not be created due to a data conflict." });
         }
 
         var customer = await _db.users
@@ -119,7 +117,6 @@ public class ReviewController : ControllerBase
                   && occ.status == "Completed"
                   && b.customer_id == customerId
                   && b.status == "Confirmed"
-                  && !_db.reviews.Any(r => r.occurrence_id == occ.occurrence_id && r.customer_id == customerId)
             orderby occ.date descending, occ.time descending, occ.occurrence_id descending
             select (int?)occ.occurrence_id
         ).FirstOrDefaultAsync();
@@ -148,6 +145,7 @@ public class ReviewController : ControllerBase
                 CreatedAt = x.created_at,
                 Replies = x.replies
                     .OrderBy(z => z.created_at)
+                    .ThenBy(z => z.reply_id)
                     .Select(z => new ReplyResponse
                     {
                         ReplyId = z.reply_id,
@@ -184,6 +182,7 @@ public class ReviewController : ControllerBase
             .AsNoTracking()
             .Where(r => r.occurrence.event_id == eventId)
             .OrderByDescending(r => r.created_at)
+            .ThenByDescending(r => r.review_id)
             .Select(r => new ReviewResponse
             {
                 ReviewId = r.review_id,
@@ -196,6 +195,7 @@ public class ReviewController : ControllerBase
                 CreatedAt = r.created_at,
                 Replies = r.replies
                     .OrderBy(x => x.created_at)
+                    .ThenBy(x => x.reply_id)
                     .Select(x => new ReplyResponse
                     {
                         ReplyId = x.reply_id,
