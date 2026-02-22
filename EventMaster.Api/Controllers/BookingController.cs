@@ -249,6 +249,175 @@ public class BookingsController : ControllerBase
     }
 
     // =========================
+    // 5) POST /api/bookings/{id}/cancel-refund
+    // Customer cancels booking + refund is processed atomically
+    // Rules:
+    // - Only Scheduled occurrence
+    // - Must be >= 24 hours before start
+    // Refund:
+    // - Refund = last SUCCESS payment amount * 0.85
+    // - Insert payments row: status=Refunded, amount = -refund
+    // =========================
+    [HttpPost("{id:int}/cancel-refund")]
+    public async Task<IActionResult> CancelAndRefund(int id)
+    {
+        var myUserId = _me.UserId;
+
+        await using var tx = await _db.Database.BeginTransactionAsync();
+
+        var b = await _db.bookings
+            .FirstOrDefaultAsync(x => x.booking_id == id && x.customer_id == myUserId);
+
+        if (b == null)
+            return NotFound(new { message = "Booking not found." });
+
+        if (b.status == "Cancelled")
+            return Ok(new { message = "Booking already cancelled." }); // idempotent
+
+        var occ = await _db.event_occurrences
+            .FirstOrDefaultAsync(o => o.occurrence_id == b.occurrence_id);
+
+        if (occ == null)
+            return NotFound(new { message = "Event occurrence not found for this booking." });
+
+        // Customer can cancel only if occurrence is Scheduled
+        if (occ.status != "Scheduled")
+            return BadRequest(new { message = $"Cannot cancel a booking for an occurrence with status '{occ.status}'." });
+
+        // 24-hour rule
+        var occStart = occ.date.ToDateTime(occ.time); // DateOnly + TimeOnly
+        var now = DateTime.UtcNow;
+
+        // NOTE: This assumes occurrence date/time is treated as UTC in your backend.
+        // If your app treats occurrence time as local time, swap UtcNow -> Now consistently across the app.
+        var hoursUntil = (occStart - now).TotalHours;
+        if (hoursUntil < 24)
+            return BadRequest(new { message = "Bookings can only be cancelled at least 24 hours before the event starts." });
+
+        // Find latest SUCCESS payment for this booking
+        var paid = await _db.payments
+            .Where(p => p.booking_id == b.booking_id && p.status == "Success")
+            .OrderByDescending(p => p.created_at)
+            .FirstOrDefaultAsync();
+
+        if (paid == null)
+            return BadRequest(new { message = "No successful payment found for this booking. Refund cannot be processed." });
+
+        // Cancel booking: free capacity + remove seats
+        occ.remaining_capacity += b.quantity;
+
+        var bookingSeats = ParseSeats(b.seats_occupied);
+        if (bookingSeats.Count > 0)
+        {
+            var occSeats = ParseSeats(occ.seats_occupied);
+            foreach (var s in bookingSeats)
+                occSeats.Remove(s);
+
+            occ.seats_occupied = JoinSeats(occSeats);
+        }
+
+        b.status = "Cancelled";
+
+        // Refund amount: 15% cancellation fee (includes tax), refund stored as negative amount row
+        var refund = Math.Round(paid.amount * 0.85m, 2);
+
+        var refundRow = new payment
+        {
+            booking_id = b.booking_id,
+            amount = -refund,
+            card = paid.card, // same card used for booking
+            status = "Refunded",
+            details = "Customer Cancelled (15% fee)",
+            created_at = DateTime.UtcNow
+        };
+
+        _db.payments.Add(refundRow);
+        await _db.SaveChangesAsync();
+
+        await tx.CommitAsync();
+
+        return Ok(new
+        {
+            message = "Booking cancelled and refund processed.",
+            refundedAmount = refund,
+            refundPaymentId = refundRow.payment_id
+        });
+    }
+
+
+    // =========================
+    // 6) GET /api/bookings/dashboard
+    // Returns booking cards data without N+1 calls
+    // =========================
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboardBookings()
+    {
+        var myUserId = _me.UserId;
+
+        var rows = await (
+            from b in _db.bookings.AsNoTracking()
+            join occ in _db.event_occurrences.AsNoTracking() on b.occurrence_id equals occ.occurrence_id
+            join ev in _db.events.AsNoTracking() on occ.event_id equals ev.event_id
+            join v in _db.venues.AsNoTracking() on occ.venue_id equals v.venue_id
+            where b.customer_id == myUserId
+            orderby occ.date descending, occ.time descending
+            select new
+            {
+                bookingId = b.booking_id,
+                occurrenceId = occ.occurrence_id,
+                eventId = ev.event_id,
+
+                // Card fields (match Events view style)
+                name = ev.name,
+                category = ev.category,
+                description = ev.description,
+                image = ev.image,
+
+                // Instead of price, frontend shows this status
+                status = occ.status, // Scheduled / Cancelled / Completed
+
+                // Occurrence details
+                date = occ.date,
+                time = occ.time,
+                venueName = v.name,
+                venueCity = v.city,
+
+                // Booking details
+                quantity = b.quantity,
+                seatsOccupied = b.seats_occupied,
+                bookingStatus = b.status,
+                ticketNumber = b.ticket_number,
+                createdAt = b.created_at
+            }
+        ).ToListAsync();
+
+        // Upcoming vs Past split is easier in frontend (needs "now"), but we can return startDateTime too:
+        var withStart = rows.Select(r => new
+        {
+            r.bookingId,
+            r.occurrenceId,
+            r.eventId,
+            r.name,
+            r.category,
+            r.description,
+            r.image,
+            r.status,
+            r.date,
+            r.time,
+            startDateTimeUtc = r.date.ToDateTime(r.time), // same note about timezone
+            r.venueName,
+            r.venueCity,
+            r.quantity,
+            r.seatsOccupied,
+            r.bookingStatus,
+            r.ticketNumber,
+            r.createdAt
+        });
+
+        return Ok(withStart);
+    }
+
+    // =========================
     // Seat helpers
     // =========================
     private static List<string> NormalizeSeats(IEnumerable<string>? seats)

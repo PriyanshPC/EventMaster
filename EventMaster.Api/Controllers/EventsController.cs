@@ -477,6 +477,9 @@ public class EventsController : ControllerBase
 
         await _db.SaveChangesAsync();
 
+        foreach (var occ in upcomingScheduled)
+            await AutoRefundBookingsForOccurrenceAsync(occ.occurrence_id);
+
         // TODO: trigger refund process for affected bookings (kept out of controller for now)
         return NoContent();
     }
@@ -573,16 +576,56 @@ public class EventsController : ControllerBase
 
         occ.o.status = "Cancelled";
         await _db.SaveChangesAsync();
+        await AutoRefundBookingsForOccurrenceAsync(occurrenceId);
 
         // TODO: trigger refund for bookings of this occurrence
         return NoContent();
+    }
+
+    private async Task AutoRefundBookingsForOccurrenceAsync(int occurrenceId)
+    {
+        // Get all bookings for this occurrence
+        var bookings = await _db.bookings
+            .Where(b => b.occurrence_id == occurrenceId && b.status != "Cancelled")
+            .ToListAsync();
+
+        if (bookings.Count == 0) return;
+
+        foreach (var b in bookings)
+        {
+            // mark booking cancelled (customer doesn't need to do anything)
+            b.status = "Cancelled";
+
+            // latest success payment
+            var paid = await _db.payments
+                .Where(p => p.booking_id == b.booking_id && p.status == "Success")
+                .OrderByDescending(p => p.created_at)
+                .FirstOrDefaultAsync();
+
+            if (paid == null)
+                continue; // nothing to refund
+
+            // Full refund (EventMaster recovers from organizer)
+            var refundRow = new payment
+            {
+                booking_id = b.booking_id,
+                amount = -paid.amount,
+                card = paid.card,
+                status = "Refunded",
+                details = "Organizer Cancelled - Full Refund",
+                created_at = DateTime.UtcNow
+            };
+
+            _db.payments.Add(refundRow);
+        }
+
+        await _db.SaveChangesAsync();
     }
 
     // OPTIONS (if your rubric checks)
     [HttpOptions]
     [AllowAnonymous]
     public IActionResult Options() => Ok();
-
     private static string NormalizeOrGenerateImageFileName(int eventId, string? storedImage)
     {
         // If your DB already has a filename, keep it; otherwise enforce event_01.png

@@ -102,7 +102,7 @@
                             <div class="em-card-title">@e.Title</div>
                             <div class="em-card-sub">@e.SubTitle</div>
                             <div class="em-card-sub">@e.VenueLine</div>
-                            <div class="em-card-sub">$@e.Price</div>
+                            <div class="em-card-sub">@e.Price</div>
                         </div>
                     </a>
                 </div>
@@ -119,35 +119,11 @@
                 locationSelect?.addEventListener("change", () => form.submit());
             const dateFromInput = document.getElementById("dateFromInput");
             const categorySelect = document.getElementById("categorySelect");
-            const datalist = document.getElementById("locationOptions");
             const qInput = document.getElementById("qInput");
-
-            function isInDatalist(value) {
-                if (!value) return true; // allow empty
-                const opts = datalist.querySelectorAll("option");
-                for (const o of opts) {
-                    if (o.value.toLowerCase() === value.toLowerCase()) return true;
-                }
-                return false;
-            }
 
             // Date & category: filter immediately
             dateFromInput?.addEventListener("change", () => form.submit());
             categorySelect?.addEventListener("change", () => form.submit());
-
-            // Location: only submit if value matches list option
-            locationInput?.addEventListener("change", () => {
-                if (!isInDatalist(locationInput.value)) {
-                    locationInput.value = "";
-                    return;
-                }
-                form.submit();
-            });
-
-            // Blur guard: if user typed invalid location, clear it
-            locationInput?.addEventListener("blur", () => {
-                if (!isInDatalist(locationInput.value)) locationInput.value = "";
-            });
 
             // IMPORTANT: search input should NOT auto-submit on typing.
             // Only submit when user clicks Search (form submit).

@@ -1,0 +1,133 @@
+﻿@model EventMaster.Web.Models.Dashboard.BookingDetailsVm
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h2 class="mb-1">@Model.Booking.EventName</h2>
+            <div class="text-muted">Booking #@Model.Booking.BookingId</div>
+        </div>
+
+        <a class="btn btn-outline-secondary" href="@Url.Action("User", "Dashboard")">Back to Dashboard</a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Error))
+    {
+        <div class="alert alert-danger">@Model.Error</div>
+    }
+
+    @if (TempData["Toast"] != null)
+    {
+        <div class="alert alert-success">@TempData["Toast"]</div>
+    }
+    @if (TempData["ToastError"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ToastError"]</div>
+    }
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Booking Info</h4>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="text-muted small">Status</div>
+                            <div><span class="badge bg-secondary">@Model.Booking.Status</span></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted small">Tickets</div>
+                            <div>@Model.Booking.Quantity</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted small">Date</div>
+                            <div>@Model.Booking.Date.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted small">Time</div>
+                            <div>@Model.Booking.Time.ToString("h:mm tt")</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-muted small">Venue</div>
+                            <div>@Model.Booking.VenueName</div>
+                            <div class="text-muted">@Model.Booking.VenueAddress, @Model.Booking.VenueCity</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-muted small">Seats Selected</div>
+                            <div>@(string.IsNullOrWhiteSpace(Model.Booking.SeatsOccupied) ? "N/A" : Model.Booking.SeatsOccupied)</div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h5 class="mb-2">Payment</h5>
+                    @if (Model.Payment == null)
+                    {
+                        <div class="text-muted">No payment found for this booking.</div>
+                    }
+                    else
+                    {
+                        <div class="small">
+                            <div><strong>Status:</strong> @Model.Payment.Status</div>
+                            <div><strong>Amount:</strong> @Model.Payment.Amount</div>
+                            <div><strong>Card:</strong> @Model.Payment.Card</div>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+                        @* Cancel button should only be meaningful if Scheduled.
+                           Backend enforces 24h window + scheduled status anyway. *@
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                            Cancel Booking
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="alert alert-info">
+                <div class="fw-semibold mb-1">Cancellation Policy</div>
+                <div class="small">
+                    You can cancel up to <strong>24 hours</strong> before the event starts.
+                    Customer cancellations incur a <strong>15% cancellation fee</strong> (includes taxes).
+                    If the organizer cancels the event, you receive a <strong>full refund</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cancel this booking?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    This will cancel your booking and process the refund.
+                    A 15% cancellation fee will apply (includes taxes).
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+
+                    <form method="post" action="@Url.Action("CancelRefund", "Dashboard", new { id = Model.Booking.BookingId })">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">Yes, Cancel & Refund</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

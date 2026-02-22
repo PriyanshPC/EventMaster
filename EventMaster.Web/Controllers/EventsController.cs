@@ -79,7 +79,7 @@ public class EventsController : Controller
             .ToList();
 
         // Now build cards and apply filters in-memory
-        var apiBase = (_config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
+        var apiBase = (_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
 
         var cards = new List<EventOccurrenceCardVm>();
 
@@ -155,7 +155,7 @@ public class EventsController : Controller
         var headerWhen = $"{details.Date:MMM d, yyyy} • {time12hr}";
         var headerWhere = $"{details.VenueName} • {details.City}, {details.Province}";
 
-        var apiBase = (_config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
+        var apiBase = (_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
         var imageUrl = $"{apiBase}/api/events/{eventId}/image";
 
         var vm = new EventDetailsViewModel

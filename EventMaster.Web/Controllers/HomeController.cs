@@ -42,7 +42,7 @@ public class HomeController : Controller
             var when = $"{occ.Date:MMM d} • {time12hr}";
             var where = $"{occ.City}, {occ.Province}";
             var subtitle = $"{when} • {where}";
-            var apiBase = (_config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
+            var apiBase = (_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
             return new LandingEventCardViewModel
             {
                 EventId = e.EventId,

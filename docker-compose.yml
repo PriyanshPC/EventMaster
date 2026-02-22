@@ -47,6 +47,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       Api__BaseUrl: "http://eventmaster-api:8081"
+      Api__PublicUrl: "http://127.0.0.1:8081"
     ports:
       - "8080:8080"
 
