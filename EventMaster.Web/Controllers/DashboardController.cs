@@ -134,7 +134,7 @@ public class DashboardController : Controller
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
-        var profileResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
+        var updateProfileOk = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
         {
             CurrentPassword = currentPassword,
             Email = email?.Trim(),
@@ -142,7 +142,7 @@ public class DashboardController : Controller
         }, jwt);
 
         var wantsPasswordChange = !string.IsNullOrWhiteSpace(newPassword) || !string.IsNullOrWhiteSpace(confirmPassword);
-        ApiOperationResult? passwordResult = null;
+        var passwordOk = true;
 
         if (wantsPasswordChange)
         {
@@ -158,32 +158,29 @@ public class DashboardController : Controller
                 return RedirectToAction(nameof(Customer), new { tab = "settings" });
             }
 
-            passwordResult = await _authApi.ChangePasswordAsync(new ChangePasswordRequest
+            passwordOk = await _authApi.ChangePasswordAsync(new ChangePasswordRequest
             {
                 CurrentPassword = currentPassword,
                 NewPassword = newPassword
             }, jwt);
         }
 
-        if (!profileResult.Success)
+        if (updateProfileOk && passwordOk)
         {
-            SetNotification(profileResult.Message ?? "Unable to update profile.", "danger");
-            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            SetNotification(wantsPasswordChange ? "Profile and password updated successfully." : "Profile updated successfully.", "success");
         }
-
-        if (wantsPasswordChange)
+        else if (!updateProfileOk && !passwordOk)
         {
-            if (passwordResult is null)
-            {
-                SetNotification("Unable to update password.", "danger");
-                return RedirectToAction(nameof(Customer), new { tab = "settings" });
-            }
-
-            SetNotification(passwordResult.Message ?? (passwordResult.Success ? "Password updated successfully." : "Unable to update password."), passwordResult.Success ? "success" : "danger");
-            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            SetNotification("Unable to update profile and password.", "danger");
         }
-
-        SetNotification(profileResult.Message ?? "Profile updated successfully.", "success");
+        else if (!updateProfileOk)
+        {
+            SetNotification("Password updated, but profile update failed.", "warning");
+        }
+        else
+        {
+            SetNotification("Profile updated, but password update failed.", "warning");
+        }
 
         return RedirectToAction(nameof(Customer), new { tab = "settings" });
     }
