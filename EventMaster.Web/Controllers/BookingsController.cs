@@ -12,14 +12,12 @@ public class BookingsController : Controller
 {
     private const string SessionIntentKey = "Booking.Intent";
     private readonly EventsApiClient _eventsApi;
-    private readonly BookingsApiClient _bookingsApi;
     private readonly PaymentsApiClient _paymentsApi;
     private readonly IConfiguration _config;
 
-    public BookingsController(EventsApiClient eventsApi, BookingsApiClient bookingsApi, PaymentsApiClient paymentsApi, IConfiguration config)
+    public BookingsController(EventsApiClient eventsApi, PaymentsApiClient paymentsApi, IConfiguration config)
     {
         _eventsApi = eventsApi;
-        _bookingsApi = bookingsApi;
         _paymentsApi = paymentsApi;
         _config = config;
     }
@@ -115,22 +113,11 @@ public class BookingsController : Controller
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
-        var booking = await _bookingsApi.CreateBookingAsync(new BookingCreateRequestDto
+        var paymentResult = await _paymentsApi.FinalizeBookingAsync(new PaymentCreateRequestDto
         {
             OccurrenceId = intent.OccurrenceId,
             Quantity = intent.Quantity,
-            Seats = intent.Seats
-        }, jwt);
-
-        if (booking is null)
-        {
-            SetNotification("Unable to reserve booking. Please try again.", "danger");
-            return RedirectToAction(nameof(Create), new { eventId = intent.EventId, occurrenceId = intent.OccurrenceId });
-        }
-
-        var paymentResult = await _paymentsApi.CreatePaymentAsync(new PaymentCreateRequestDto
-        {
-            BookingId = booking.BookingId,
+            Seats = intent.Seats,
             CouponCode = input.DiscountCoupon,
             NameOnCard = input.NameOnCard,
             CardNumber = input.CardNumber,
@@ -141,14 +128,14 @@ public class BookingsController : Controller
 
         if (!paymentResult.Success)
         {
-            await _bookingsApi.CancelAndRefundAsync(booking.BookingId, jwt);
-            SetNotification(paymentResult.ErrorMessage ?? "Payment failed.", "danger");
+            var type = paymentResult.StatusCode == 409 ? "warning" : "danger";
+            SetNotification(paymentResult.ErrorMessage ?? "Payment failed.", type);
             return RedirectToAction(nameof(Payment));
         }
 
         ClearIntent();
         SetNotification("Payment successful.", "success");
-        return RedirectToAction("BookingDetails", "Dashboard", new { bookingId = booking.BookingId });
+        return RedirectToAction("BookingDetails", "Dashboard", new { bookingId = paymentResult.Response!.BookingId });
     }
 
     private BookingPageViewModel BuildBookingVm(EventOccurrenceDetailsResponse details, BookingFormInput input)

@@ -14,34 +14,30 @@ public class PaymentsApiClient
         _http = http;
     }
 
-    public async Task<(bool Success, PaymentResponseDto? Response, string? ErrorMessage)> CreatePaymentAsync(PaymentCreateRequestDto payload, string jwt)
+    public async Task<(bool Success, BookingFinalizeResponseDto? Response, string? ErrorMessage, int? StatusCode)> FinalizeBookingAsync(PaymentCreateRequestDto payload, string jwt)
     {
-        using var req = new HttpRequestMessage(HttpMethod.Post, "api/payment");
+        using var req = new HttpRequestMessage(HttpMethod.Post, "api/payment/finalize-booking");
         req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
         req.Content = JsonContent.Create(payload);
 
         var resp = await _http.SendAsync(req);
         var body = await resp.Content.ReadAsStringAsync();
-        PaymentResponseDto? data = null;
-        try { data = JsonSerializer.Deserialize<PaymentResponseDto>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); } catch { }
+
+        BookingFinalizeResponseDto? data = null;
+        try { data = JsonSerializer.Deserialize<BookingFinalizeResponseDto>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); } catch { }
 
         if (resp.IsSuccessStatusCode)
-        {
-            return (true, data, null);
-        }
+            return (true, data, null, (int)resp.StatusCode);
 
-        string? message = data?.Details;
-        if (string.IsNullOrWhiteSpace(message))
+        string? message = null;
+        try
         {
-            try
-            {
-                using var doc = JsonDocument.Parse(body);
-                if (doc.RootElement.TryGetProperty("message", out var m)) message = m.GetString();
-                else if (doc.RootElement.TryGetProperty("details", out var d)) message = d.GetString();
-            }
-            catch { }
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.TryGetProperty("message", out var m)) message = m.GetString();
+            else if (doc.RootElement.TryGetProperty("details", out var d)) message = d.GetString();
         }
+        catch { }
 
-        return (false, data, message ?? "Payment failed.");
+        return (false, data, message ?? "Payment failed.", (int)resp.StatusCode);
     }
 }
