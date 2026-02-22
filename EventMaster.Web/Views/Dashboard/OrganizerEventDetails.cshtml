@@ -1,0 +1,73 @@
+@model EventMaster.Web.Models.OrganizerOccurrenceDetailsViewModel
+@{
+    ViewData["Title"] = Model.Details.EventName;
+
+    string StatusTextClass(string? status)
+    {
+        return status?.Trim().ToLowerInvariant() switch
+        {
+            "scheduled" => "text-success",
+            "cancelled" => "text-danger",
+            "completed" => "text-secondary",
+            _ => "text-primary"
+        };
+    }
+}
+
+<div class="container my-4">
+    <div class="card em-details-header mb-4">
+        <div class="row g-0">
+            <div class="col-12 col-lg-3">
+                <img class="em-details-img" src="@Model.ImageUrl" alt="@Model.Details.EventName" />
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="card-body">
+                    <div class="em-pill">@Model.Details.Category</div>
+                    <h1 class="h4 fw-bold mt-2 mb-1">@Model.Details.EventName</h1>
+                    <div class="text-muted mb-2">
+                        <div><i class="bi bi-calendar-event me-1"></i> @Model.HeaderWhen</div>
+                        <div><i class="bi bi-geo-alt me-1"></i> @Model.HeaderWhere</div>
+                        <div><i class="bi bi-cash-coin me-1"></i> $@Model.Details.Price / ticket</div>
+                        <div><i class="bi bi-people me-1"></i> Remaining: @Model.Details.RemainingCapacity</div>
+                        <div><i class="bi bi-info-circle me-1"></i> Status: <span class="fw-bold @StatusTextClass(Model.Details.Status)">@Model.Details.Status</span></div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        @if (Model.CanCancel)
+                        {
+                            <form asp-action="CancelOccurrence" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="eventId" value="@Model.EventId" />
+                                <input type="hidden" name="occurrenceId" value="@Model.OccurrenceId" />
+                                <button class="btn btn-danger" type="submit">Cancel Event</button>
+                            </form>
+                        }
+
+                        <a class="btn btn-outline-secondary" asp-action="Organizer" asp-route-tab="events">Back to Organizer Dashboard</a>
+                    </div>
+
+                    <div class="text-muted small mt-3">
+                        Organizer: <span class="fw-semibold">@Model.Details.OrganizerName</span>
+                        • @Model.Details.OrganizerEmail
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="h6 fw-bold mb-2">About this event</h2>
+            <div class="text-muted">
+                @if (string.IsNullOrWhiteSpace(Model.Details.Description))
+                {
+                    <span>No description provided.</span>
+                }
+                else
+                {
+                    @Model.Details.Description
+                }
+            </div>
+        </div>
+    </div>
+</div>

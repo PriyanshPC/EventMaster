@@ -213,6 +213,35 @@ public class ReviewController : ControllerBase
     }
 
 
+
+    [HttpGet("mine/pending-replies")]
+    [Authorize(Roles = "ORGANIZER")]
+    public async Task<ActionResult<List<object>>> GetPendingReplies()
+    {
+        var myUserId = _me.UserId;
+
+        var rows = await (
+            from r in _db.reviews
+            join occ in _db.event_occurrences on r.occurrence_id equals occ.occurrence_id
+            join ev in _db.events on occ.event_id equals ev.event_id
+            where ev.org_id == myUserId
+                  && !r.replies.Any()
+            orderby r.created_at descending, r.review_id descending
+            select new
+            {
+                reviewId = r.review_id,
+                eventId = ev.event_id,
+                eventName = ev.name,
+                customerName = r.customer.name,
+                rating = r.rating,
+                comment = r.comment,
+                createdAt = r.created_at
+            }
+        ).ToListAsync();
+
+        return Ok(rows);
+    }
+
     // =========================
     // 5) POST /api/reviews/{reviewId}/replies
     // Organizer replies ONLY if they own the event
@@ -247,6 +276,10 @@ public class ReviewController : ControllerBase
 
         if (reviewRow.org_id != myUserId)
             return StatusCode(403, new { message = "Only the event organizer can reply to this review." });
+
+        var hasReply = await _db.replies.AnyAsync(x => x.review_id == reviewId);
+        if (hasReply)
+            return Conflict(new { message = "This review already has a reply." });
 
         var entity = new reply
         {
