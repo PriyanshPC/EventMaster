@@ -22,7 +22,7 @@ public class DashboardController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Customer(string tab = "bookings", string? edit = null, string? message = null, string? error = null)
+    public async Task<IActionResult> Customer(string tab = "bookings", string? message = null, string? error = null)
     {
         SetNotificationFromLegacyParams(message, error);
 
@@ -45,7 +45,7 @@ public class DashboardController : Controller
                 OccurrenceId = c.OccurrenceId,
                 Name = c.Name,
                 Category = c.Category,
-                Status = c.Status,
+                Status = c.BookingStatus,
                 SubTitle = $"{c.Date:MMM d} • {DateTime.Today.Add(c.Time.ToTimeSpan()):hh:mm tt}",
                 VenueLine = $"{c.VenueName} • {c.VenueCity}",
                 ImageUrl = $"{apiBase}/api/events/{c.EventId}/image"
@@ -61,8 +61,7 @@ public class DashboardController : Controller
                 Name = me.Name,
                 Username = me.Username,
                 Email = me.Email,
-                Phone = me.Phone,
-                EditMode = edit ?? ""
+                Phone = me.Phone
             },
             UpcomingBookings = mapped.Where(x => x.StartDateTimeUtc >= now).OrderBy(x => x.StartDateTimeUtc).Select(x => x.Card).ToList(),
             PastBookings = mapped.Where(x => x.StartDateTimeUtc < now).OrderByDescending(x => x.StartDateTimeUtc).Select(x => x.Card).ToList()
@@ -124,54 +123,115 @@ public class DashboardController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateEmail(string email, string currentPassword)
+    public async Task<IActionResult> UpdateProfile(string email, string? phone, string currentPassword, string? newPassword, string? confirmPassword)
     {
-        return await UpdateProfileInternal(new UpdateProfileRequest { Email = email?.Trim(), CurrentPassword = currentPassword }, "email");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdatePhone(string phone, string currentPassword)
-    {
-        return await UpdateProfileInternal(new UpdateProfileRequest { Phone = phone?.Trim(), CurrentPassword = currentPassword }, "phone");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
-    {
-        if (newPassword != confirmPassword)
+        if (string.IsNullOrWhiteSpace(currentPassword))
         {
-            SetNotification("New Password and Confirm Password must match.", "danger");
-            return RedirectToAction(nameof(Customer), new { tab = "settings", edit = "password" });
+            SetNotification("Current Password is required to confirm profile updates.", "danger");
+            return RedirectToAction(nameof(Customer), new { tab = "settings" });
         }
 
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
-        var ok = await _authApi.ChangePasswordAsync(new ChangePasswordRequest
+        var me = await _authApi.MeAsync(jwt);
+        if (me is null)
         {
-            CurrentPassword = currentPassword,
-            NewPassword = newPassword
-        }, jwt);
+            SetNotification("Unable to load current profile details.", "danger");
+            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+        }
 
-        SetNotification(ok ? "Password updated successfully." : "Unable to update password.", ok ? "success" : "danger");
+        var normalizedEmail = email?.Trim() ?? string.Empty;
+        var normalizedPhone = phone?.Trim();
+        var currentPhone = me.Phone?.Trim();
+
+        var emailChanged = !string.Equals(me.Email, normalizedEmail, StringComparison.OrdinalIgnoreCase);
+        var phoneChanged = !string.Equals(currentPhone, normalizedPhone, StringComparison.OrdinalIgnoreCase);
+        var wantsPasswordChange = !string.IsNullOrWhiteSpace(newPassword) || !string.IsNullOrWhiteSpace(confirmPassword);
+
+        if (wantsPasswordChange)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                SetNotification("Provide both New Password and Confirm Password to change password.", "danger");
+                return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                SetNotification("New Password and Confirm Password must match.", "danger");
+                return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            }
+        }
+
+        ApiOperationResult? profileResult = null;
+        if (emailChanged || phoneChanged)
+        {
+            profileResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
+            {
+                CurrentPassword = currentPassword,
+                Email = normalizedEmail,
+                Phone = normalizedPhone
+            }, jwt);
+
+            if (!profileResult.Success)
+            {
+                SetNotification(profileResult.Message ?? "Unable to update profile.", "danger");
+                return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            }
+        }
+
+        if (wantsPasswordChange)
+        {
+            var passwordResult = await _authApi.ChangePasswordAsync(new ChangePasswordRequest
+            {
+                CurrentPassword = currentPassword,
+                NewPassword = newPassword!
+            }, jwt);
+
+            if (!passwordResult.Success)
+            {
+                if (emailChanged || phoneChanged)
+                {
+                    var rollbackResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
+                    {
+                        CurrentPassword = currentPassword,
+                        Email = me.Email,
+                        Phone = me.Phone
+                    }, jwt);
+
+                    if (rollbackResult.Success)
+                    {
+                        SetNotification(passwordResult.Message ?? "Unable to update password. Profile changes were rolled back.", "danger");
+                    }
+                    else
+                    {
+                        var rollbackMessage = rollbackResult.Message ?? "Unable to roll back profile changes.";
+                        SetNotification($"{(passwordResult.Message ?? "Unable to update password.")} {rollbackMessage}", "danger");
+                    }
+                }
+                else
+                {
+                    SetNotification(passwordResult.Message ?? "Unable to update password.", "danger");
+                }
+
+                return RedirectToAction(nameof(Customer), new { tab = "settings" });
+            }
+
+            SetNotification(passwordResult.Message ?? "Profile and password updated successfully.", "success");
+            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+        }
+
+        if (profileResult is not null)
+        {
+            SetNotification(profileResult.Message ?? "Profile updated successfully.", "success");
+        }
+        else
+        {
+            SetNotification("No changes were detected.", "info");
+        }
+
         return RedirectToAction(nameof(Customer), new { tab = "settings" });
-    }
-
-    private async Task<IActionResult> UpdateProfileInternal(UpdateProfileRequest req, string mode)
-    {
-        var jwt = User.FindFirstValue("access_token");
-        if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
-
-        var ok = await _authApi.UpdateProfileAsync(req, jwt);
-        SetNotification(ok ? "Profile updated successfully." : "Unable to update profile.", ok ? "success" : "danger");
-
-        return RedirectToAction(nameof(Customer), new
-        {
-            tab = "settings",
-            edit = ok ? null : mode
-        });
     }
 
     private void SetNotificationFromLegacyParams(string? message, string? error)
