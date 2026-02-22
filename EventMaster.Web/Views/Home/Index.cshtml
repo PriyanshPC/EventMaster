@@ -83,8 +83,6 @@
 @section Scripts {
     <script>
         (function () {
-            const rightClicks = {};
-
             function getScrollStep(container) {
                 const card = container.querySelector(".em-card");
                 if (!card) return 280;
@@ -112,16 +110,29 @@
                 if (rightBtn) rightBtn.classList.toggle("d-none", !canScrollRight(container));
             }
 
-            function showEndCap(rowId) {
+            function ensureEndCapVisible(rowId) {
                 const endcap = document.getElementById(rowId + "-endcap");
-                if (endcap) endcap.classList.remove("d-none");
+                if (endcap && endcap.classList.contains("d-none")) {
+                    endcap.classList.remove("d-none");
+                }
+            }
+
+            function regressionCheck(rowId) {
+                const endcap = document.getElementById(rowId + "-endcap");
+                if (!endcap) return;
+
+                if (endcap.classList.contains("d-none")) {
+                    console.warn("[LandingCarousel] End-cap should be visible but is hidden", { rowId });
+                }
             }
 
             // Initial arrow state on load + on resize
             function init() {
                 document.querySelectorAll("[id^='row-']").forEach(el => {
                     if (el.classList.contains("em-hscroll")) {
+                        ensureEndCapVisible(el.id);
                         updateArrows(el.id);
+                        regressionCheck(el.id);
                     }
                 });
             }
@@ -146,9 +157,6 @@
                     if (!container) return;
 
                     container.scrollLeft += getScrollStep(container);
-
-                    rightClicks[rowId] = (rightClicks[rowId] || 0) + 1;
-                    if (rightClicks[rowId] >= 5) showEndCap(rowId);
 
                     // update arrow visibility after motion
                     setTimeout(() => updateArrows(rowId), 80);
