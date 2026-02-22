@@ -1,1 +1,128 @@
-﻿
+@model EventMaster.Web.Models.CustomerDashboardViewModel
+@{
+    ViewData["Title"] = "Customer Dashboard";
+    var isEditEmail = Model.Settings.EditMode == "email";
+    var isEditPhone = Model.Settings.EditMode == "phone";
+    var isEditPassword = Model.Settings.EditMode == "password";
+    var hasEditMode = isEditEmail || isEditPhone || isEditPassword;
+}
+
+<div class="container my-4">
+    <h1 class="h4 fw-bold mb-3">Customer Dashboard</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="alert alert-success">@Model.Message</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Error))
+    {
+        <div class="alert alert-danger">@Model.Error</div>
+    }
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link @(Model.ActiveTab == "bookings" ? "active" : "")" href="@Url.Action("Customer", new { tab = "bookings" })">Bookings</a></li>
+        <li class="nav-item"><a class="nav-link @(Model.ActiveTab == "settings" ? "active" : "")" href="@Url.Action("Customer", new { tab = "settings" })">Settings</a></li>
+    </ul>
+
+    @if (Model.ActiveTab == "settings")
+    {
+        <div class="card p-3">
+            <div class="mb-2"><strong>Name:</strong> @Model.Settings.Name</div>
+            <div class="mb-3"><strong>Username:</strong> @Model.Settings.Username</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <form asp-action="UpdateEmail" method="post" class="d-flex gap-2">
+                        @Html.AntiForgeryToken()
+                        <input class="form-control" name="email" value="@Model.Settings.Email" @(isEditEmail ? null : "readonly") />
+                        <input class="form-control" type="password" name="currentPassword" placeholder="Current Password" @(isEditEmail ? null : "disabled") required />
+                        @if (!isEditEmail)
+                        {
+                            <a class="btn btn-outline-primary @(hasEditMode ? "disabled" : "")" href="@Url.Action("Customer", new { tab = "settings", edit = "email" })">Edit</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        }
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <form asp-action="UpdatePhone" method="post" class="d-flex gap-2">
+                        @Html.AntiForgeryToken()
+                        <input class="form-control" name="phone" value="@Model.Settings.Phone" @(isEditPhone ? null : "readonly") />
+                        <input class="form-control" type="password" name="currentPassword" placeholder="Current Password" @(isEditPhone ? null : "disabled") required />
+                        @if (!isEditPhone)
+                        {
+                            <a class="btn btn-outline-primary @(hasEditMode ? "disabled" : "")" href="@Url.Action("Customer", new { tab = "settings", edit = "phone" })">Edit</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        }
+                    </form>
+                </div>
+            </div>
+
+            <h2 class="h6">Change Password</h2>
+            <form asp-action="ChangePassword" method="post" class="row g-2">
+                @Html.AntiForgeryToken()
+                <div class="col-md-4"><input class="form-control" type="password" name="currentPassword" placeholder="Current Password" required /></div>
+                <div class="col-md-4"><input class="form-control" type="password" name="newPassword" placeholder="New Password" @(hasEditMode && !isEditPassword ? "disabled" : null) required /></div>
+                <div class="col-md-4"><input class="form-control" type="password" name="confirmPassword" placeholder="Confirm Password" @(hasEditMode && !isEditPassword ? "disabled" : null) required /></div>
+                <div class="col-12">
+                    <button class="btn btn-outline-primary" type="submit" @(hasEditMode && !isEditPassword ? "disabled" : null)>Update Password</button>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <h2 class="h5">Upcoming</h2>
+        <div class="row g-3 mb-4">
+            @if (Model.UpcomingBookings.Count == 0)
+            {
+                <div class="text-muted">No upcoming bookings.</div>
+            }
+            @foreach (var e in Model.UpcomingBookings)
+            {
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                    <a class="em-card d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
+                        <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
+                        <div class="em-card-body">
+                            <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
+                            <div class="em-card-title">@e.Name</div>
+                            <div class="em-card-sub">@e.SubTitle</div>
+                            <div class="em-card-sub">@e.VenueLine</div>
+                            <div class="em-card-sub text-capitalize fw-semibold mt-2">@e.Status</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <h2 class="h5">Past</h2>
+        <div class="row g-3">
+            @if (Model.PastBookings.Count == 0)
+            {
+                <div class="text-muted">No past bookings.</div>
+            }
+            @foreach (var e in Model.PastBookings)
+            {
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                    <a class="em-card d-block h-100 w-100" asp-action="BookingDetails" asp-route-bookingId="@e.BookingId">
+                        <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
+                        <div class="em-card-body">
+                            <div class="em-card-eyebrow">@e.Category.ToUpper()</div>
+                            <div class="em-card-title">@e.Name</div>
+                            <div class="em-card-sub">@e.SubTitle</div>
+                            <div class="em-card-sub">@e.VenueLine</div>
+                            <div class="em-card-sub text-capitalize fw-semibold mt-2">@e.Status</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>

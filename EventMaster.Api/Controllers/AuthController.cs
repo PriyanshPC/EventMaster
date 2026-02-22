@@ -135,7 +135,8 @@ public class AuthController : ControllerBase
             Role = u.role,
             Username = u.username,
             Email = u.email,
-            Name = u.name
+            Name = u.name,
+            Phone = u.phone
         });
     }
 

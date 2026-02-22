@@ -19,6 +19,11 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "http://localhost:8081/");
 });
+builder.Services.AddHttpClient<BookingsApiClient>(client =>
+{
+    var baseUrl = builder.Configuration["Api:BaseUrl"] ?? "http://localhost:8081/";
+    client.BaseAddress = new Uri(baseUrl);
+});
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

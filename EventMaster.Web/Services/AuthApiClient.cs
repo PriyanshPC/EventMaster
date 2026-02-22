@@ -38,4 +38,27 @@ public class AuthApiClient
 
         return await resp.Content.ReadFromJsonAsync<MeResponse>();
     }
+
+    public async Task<bool> UpdateProfileAsync(UpdateProfileRequest req, string jwt)
+    {
+        using var msg = new HttpRequestMessage(HttpMethod.Patch, "api/auth/profile")
+        {
+            Content = JsonContent.Create(req)
+        };
+        msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        var resp = await _http.SendAsync(msg);
+        return resp.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> ChangePasswordAsync(ChangePasswordRequest req, string jwt)
+    {
+        using var msg = new HttpRequestMessage(HttpMethod.Post, "api/auth/change-password")
+        {
+            Content = JsonContent.Create(req)
+        };
+        msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        var resp = await _http.SendAsync(msg);
+        return resp.IsSuccessStatusCode;
+    }
+
 }
