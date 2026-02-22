@@ -109,7 +109,7 @@ public class PaymentsController : ControllerBase
         if (occ.remaining_capacity < req.Quantity)
             return Conflict(new { message = "Not enough remaining capacity." });
 
-        if (occ.seating)
+        if (occ.venue.seating)
         {
             if (normalizedSeats.Count != req.Quantity)
                 return Conflict(new { message = "Seats count must match quantity." });
