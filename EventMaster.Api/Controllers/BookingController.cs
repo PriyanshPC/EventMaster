@@ -380,8 +380,8 @@ public class BookingsController : ControllerBase
 
         b.status = "Cancelled";
 
-        // Refund amount: full refund, stored as a negative amount payment row
-        var refund = Math.Round(paid.amount, 2);
+        // Refund amount: 85% refund (15% cancellation deduction), stored as a negative amount payment row
+        var refund = Math.Round(paid.amount * 0.85m, 2);
 
         var refundRow = new payment
         {
@@ -389,7 +389,7 @@ public class BookingsController : ControllerBase
             amount = -refund,
             card = paid.card, // same card used for booking
             status = "Refunded",
-            details = "Customer Cancelled - Full Refund",
+            details = "Customer Cancelled - 85% Refund (15% deduction)",
             created_at = DateTime.UtcNow
         };
 

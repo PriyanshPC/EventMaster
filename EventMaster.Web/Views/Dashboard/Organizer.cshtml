@@ -45,7 +45,7 @@
             {
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                     <div class="em-card em-card-sm d-block h-100 w-100">
-                        <a class="text-decoration-none text-reset" asp-controller="Events" asp-action="Details" asp-route-eventId="@e.EventId" asp-route-occurrenceId="@e.OccurrenceId">
+                        <a class="text-decoration-none text-reset" asp-controller="Dashboard" asp-action="OrganizerEventDetails" asp-route-eventId="@e.EventId" asp-route-occurrenceId="@e.OccurrenceId">
                             <div class="em-card-img"><img src="@e.ImageUrl" alt="@e.Name" /></div>
                             <div class="em-card-body">
                                 <div class="em-card-eyebrow">@e.Category.ToUpper()</div>

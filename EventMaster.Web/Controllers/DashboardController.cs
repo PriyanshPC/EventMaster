@@ -254,6 +254,32 @@ public class DashboardController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "ORGANIZER")]
+    public async Task<IActionResult> OrganizerEventDetails(int eventId, int occurrenceId)
+    {
+        var details = await _eventsApi.GetOccurrenceDetailsAsync(eventId, occurrenceId);
+        if (details is null) return NotFound();
+
+        var time12hr = DateTime.Today.Add(details.Time).ToString("hh:mm tt");
+        var headerWhen = $"{details.Date:MMM d, yyyy} • {time12hr}";
+        var headerWhere = $"{details.VenueName} • {details.City}, {details.Province}";
+        var apiBase = (_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/');
+
+        var vm = new OrganizerOccurrenceDetailsViewModel
+        {
+            EventId = eventId,
+            OccurrenceId = occurrenceId,
+            Details = details,
+            HeaderWhen = headerWhen,
+            HeaderWhere = headerWhere,
+            ImageUrl = $"{apiBase}/api/events/{eventId}/image",
+            CanCancel = details.Status == "Scheduled" && details.Date.ToDateTime(TimeOnly.FromTimeSpan(details.Time)) > DateTime.UtcNow
+        };
+
+        return View(vm);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> BookingDetails(int bookingId, string? message = null, string? error = null)
     {
         SetNotificationFromLegacyParams(message, error);

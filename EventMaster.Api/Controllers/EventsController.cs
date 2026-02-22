@@ -467,7 +467,10 @@ public class EventsController : ControllerBase
         if (string.IsNullOrWhiteSpace(req.Category)) return BadRequest("Category is required.");
         if (req.Occurrences is null || req.Occurrences.Count == 0) return BadRequest("At least one occurrence is required.");
 
+        var normalizedName = req.Name.Trim();
+        var normalizedCategory = req.Category.Trim();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
         foreach (var occ in req.Occurrences)
         {
             if (occ.Date < today) return BadRequest("Occurrence date cannot be in the past.");
@@ -478,22 +481,50 @@ public class EventsController : ControllerBase
             if (!venueExists) return BadRequest($"Invalid venueId: {occ.VenueId}");
         }
 
-        var ev = new _event
+        var ev = await _db.events
+            .FirstOrDefaultAsync(e => e.org_id == _me.UserId
+                && e.name.ToLower() == normalizedName.ToLower()
+                && e.category.ToLower() == normalizedCategory.ToLower());
+
+        if (ev is null)
         {
-            org_id = _me.UserId,
-            name = req.Name.Trim(),
-            category = req.Category.Trim(),
-            description = req.Description
-        };
+            ev = new _event
+            {
+                org_id = _me.UserId,
+                name = normalizedName,
+                category = normalizedCategory,
+                description = req.Description
+            };
 
-        _db.events.Add(ev);
-        await _db.SaveChangesAsync();
-
-        ev.image = $"event_{ev.event_id:D3}.png";
+            _db.events.Add(ev);
+            await _db.SaveChangesAsync();
+            ev.image = $"event_{ev.event_id:D3}.png";
+        }
+        else
+        {
+            ev.name = normalizedName;
+            ev.category = normalizedCategory;
+            ev.description = req.Description;
+            ev.updated_at = DateTime.UtcNow;
+        }
 
         var occurrenceIds = new List<int>();
         foreach (var item in req.Occurrences)
         {
+            var existingOccurrence = await _db.event_occurrences.FirstOrDefaultAsync(o =>
+                o.event_id == ev.event_id
+                && o.date == item.Date
+                && o.time == TimeOnly.FromTimeSpan(item.Time)
+                && o.venue_id == item.VenueId);
+
+            if (existingOccurrence is not null)
+            {
+                existingOccurrence.price = item.Price;
+                existingOccurrence.updated_at = DateTime.UtcNow;
+                occurrenceIds.Add(existingOccurrence.occurrence_id);
+                continue;
+            }
+
             var venueCapacity = await _db.venues.Where(v => v.venue_id == item.VenueId).Select(v => v.capacity).FirstAsync();
             var occ = new event_occurrence
             {
