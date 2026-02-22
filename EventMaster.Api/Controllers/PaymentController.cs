@@ -109,7 +109,16 @@ public class PaymentsController : ControllerBase
         if (occ.remaining_capacity < req.Quantity)
             return Conflict(new { message = "Not enough remaining capacity." });
 
-        if (occ.venue.seating)
+        var venueSeating = await _db.venues
+            .AsNoTracking()
+            .Where(v => v.venue_id == occ.venue_id)
+            .Select(v => (bool?)v.seating)
+            .FirstOrDefaultAsync();
+
+        if (venueSeating is null)
+            return Conflict(new { message = "Venue not found for selected occurrence." });
+
+        if (venueSeating.Value)
         {
             if (normalizedSeats.Count != req.Quantity)
                 return Conflict(new { message = "Seats count must match quantity." });
