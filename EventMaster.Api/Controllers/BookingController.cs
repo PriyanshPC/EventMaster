@@ -196,6 +196,61 @@ public class BookingsController : ControllerBase
         return CreatedAtAction(nameof(GetMyBookingById), new { id = b.booking_id }, response);
     }
 
+
+    // =========================
+    // 2b) GET /api/bookings/{id}/details
+    // Booking details for customer dashboard page
+    // =========================
+    [HttpGet("{id:int}/details")]
+    public async Task<ActionResult<BookingDetailsResponse>> GetMyBookingDetailsById(int id)
+    {
+        var myUserId = _me.UserId;
+
+        var details = await (
+            from b in _db.bookings.AsNoTracking()
+            join occ in _db.event_occurrences.AsNoTracking() on b.occurrence_id equals occ.occurrence_id
+            join ev in _db.events.AsNoTracking() on occ.event_id equals ev.event_id
+            join v in _db.venues.AsNoTracking() on occ.venue_id equals v.venue_id
+            where b.booking_id == id && b.customer_id == myUserId
+            select new
+            {
+                Booking = b,
+                Occurrence = occ,
+                Event = ev,
+                Venue = v
+            }
+        ).FirstOrDefaultAsync();
+
+        if (details == null)
+            return NotFound(new { message = "Booking not found." });
+
+        var payment = await _db.payments
+            .AsNoTracking()
+            .Where(p => p.booking_id == id && (p.status == "Success" || p.status == "Refunded"))
+            .OrderByDescending(p => p.created_at)
+            .FirstOrDefaultAsync();
+
+        return Ok(new BookingDetailsResponse
+        {
+            BookingId = details.Booking.booking_id,
+            EventId = details.Event.event_id,
+            OccurrenceId = details.Occurrence.occurrence_id,
+            EventName = details.Event.name,
+            Status = details.Occurrence.status,
+            Date = details.Occurrence.date,
+            Time = details.Occurrence.time,
+            VenueName = details.Venue.name,
+            VenueAddress = details.Venue.address,
+            VenueCity = details.Venue.city,
+            VenueProvince = details.Venue.province,
+            NumberOfTickets = details.Booking.quantity,
+            SeatsSelected = details.Booking.seats_occupied,
+            TotalAmount = details.Booking.total_amount,
+            TicketNumber = details.Booking.ticket_number,
+            CardSummary = payment?.card
+        });
+    }
+
     // =========================
     // 4) PUT /api/bookings/{id}/cancel
     // Cancel booking (soft delete):
@@ -350,7 +405,7 @@ public class BookingsController : ControllerBase
     // Returns booking cards data without N+1 calls
     // =========================
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboardBookings()
+    public async Task<ActionResult<List<BookingDashboardCardResponse>>> GetDashboardBookings()
     {
         var myUserId = _me.UserId;
 
@@ -361,60 +416,30 @@ public class BookingsController : ControllerBase
             join v in _db.venues.AsNoTracking() on occ.venue_id equals v.venue_id
             where b.customer_id == myUserId
             orderby occ.date descending, occ.time descending
-            select new
+            select new BookingDashboardCardResponse
             {
-                bookingId = b.booking_id,
-                occurrenceId = occ.occurrence_id,
-                eventId = ev.event_id,
-
-                // Card fields (match Events view style)
-                name = ev.name,
-                category = ev.category,
-                description = ev.description,
-                image = ev.image,
-
-                // Instead of price, frontend shows this status
-                status = occ.status, // Scheduled / Cancelled / Completed
-
-                // Occurrence details
-                date = occ.date,
-                time = occ.time,
-                venueName = v.name,
-                venueCity = v.city,
-
-                // Booking details
-                quantity = b.quantity,
-                seatsOccupied = b.seats_occupied,
-                bookingStatus = b.status,
-                ticketNumber = b.ticket_number,
-                createdAt = b.created_at
+                BookingId = b.booking_id,
+                OccurrenceId = occ.occurrence_id,
+                EventId = ev.event_id,
+                Name = ev.name,
+                Category = ev.category,
+                Description = ev.description,
+                Image = ev.image,
+                Status = occ.status,
+                Date = occ.date,
+                Time = occ.time,
+                StartDateTimeUtc = occ.date.ToDateTime(occ.time),
+                VenueName = v.name,
+                VenueCity = v.city,
+                Quantity = b.quantity,
+                SeatsOccupied = b.seats_occupied,
+                BookingStatus = b.status,
+                TicketNumber = b.ticket_number,
+                CreatedAt = b.created_at
             }
         ).ToListAsync();
 
-        // Upcoming vs Past split is easier in frontend (needs "now"), but we can return startDateTime too:
-        var withStart = rows.Select(r => new
-        {
-            r.bookingId,
-            r.occurrenceId,
-            r.eventId,
-            r.name,
-            r.category,
-            r.description,
-            r.image,
-            r.status,
-            r.date,
-            r.time,
-            startDateTimeUtc = r.date.ToDateTime(r.time), // same note about timezone
-            r.venueName,
-            r.venueCity,
-            r.quantity,
-            r.seatsOccupied,
-            r.bookingStatus,
-            r.ticketNumber,
-            r.createdAt
-        });
-
-        return Ok(withStart);
+        return Ok(rows);
     }
 
     // =========================

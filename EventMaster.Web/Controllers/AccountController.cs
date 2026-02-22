@@ -52,7 +52,7 @@ public class AccountController : Controller
 
         await SignInCookieAsync(me, token.Token);
 
-        return LocalRedirect(SafeReturnUrl(vm.ReturnUrl));
+        return LocalRedirect(SafeReturnUrl(vm.ReturnUrl, me.Role));
     }
 
     [HttpPost]
@@ -84,7 +84,7 @@ public class AccountController : Controller
 
         await SignInCookieAsync(me, token.Token);
 
-        return LocalRedirect(SafeReturnUrl(vm.ReturnUrl));
+        return LocalRedirect(SafeReturnUrl(vm.ReturnUrl, me.Role));
     }
 
     [HttpPost]
@@ -120,12 +120,13 @@ public class AccountController : Controller
             });
     }
 
-    private string SafeReturnUrl(string? returnUrl)
+    private string SafeReturnUrl(string? returnUrl, string role)
     {
         // only allow local redirects
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             return returnUrl;
 
+        if (string.Equals(role, "CUSTOMER", StringComparison.OrdinalIgnoreCase)) return "/Dashboard/Customer";
         return "/";
     }
 }
