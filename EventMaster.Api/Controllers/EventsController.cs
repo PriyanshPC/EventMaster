@@ -432,17 +432,90 @@ public class EventsController : ControllerBase
             .OrderByDescending(e => e.created_at)
             .Select(e => new
             {
-                e.event_id,
-                e.name,
-                e.category,
-                e.description,
+                eventId = e.event_id,
+                name = e.name,
+                category = e.category,
+                description = e.description,
                 imageFileName = NormalizeOrGenerateImageFileName(e.event_id, e.image),
-                e.created_at,
-                e.updated_at
+                createdAt = e.created_at,
+                updatedAt = e.updated_at,
+                occurrenceStatuses = e.event_occurrences.Select(o => o.status).Distinct().ToList()
             })
             .ToListAsync();
 
         return Ok(mine);
+    }
+
+    [HttpPost("series")]
+    [Authorize(Roles = "ORGANIZER")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CreateEventSeries([FromForm] CreateEventSeriesRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Name)) return BadRequest("Name is required.");
+        if (string.IsNullOrWhiteSpace(req.Category)) return BadRequest("Category is required.");
+        if (req.Occurrences is null || req.Occurrences.Count == 0) return BadRequest("At least one occurrence is required.");
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        foreach (var occ in req.Occurrences)
+        {
+            if (occ.Date < today) return BadRequest("Occurrence date cannot be in the past.");
+            if (occ.VenueId <= 0) return BadRequest("Venue is required for all occurrences.");
+            if (occ.Price < 0) return BadRequest("Price must be >= 0.");
+
+            var venueExists = await _db.venues.AnyAsync(v => v.venue_id == occ.VenueId);
+            if (!venueExists) return BadRequest($"Invalid venueId: {occ.VenueId}");
+        }
+
+        var ev = new _event
+        {
+            org_id = _me.UserId,
+            name = req.Name.Trim(),
+            category = req.Category.Trim(),
+            description = req.Description
+        };
+
+        _db.events.Add(ev);
+        await _db.SaveChangesAsync();
+
+        ev.image = $"event_{ev.event_id:D3}.png";
+
+        var occurrenceIds = new List<int>();
+        foreach (var item in req.Occurrences)
+        {
+            var venueCapacity = await _db.venues.Where(v => v.venue_id == item.VenueId).Select(v => v.capacity).FirstAsync();
+            var occ = new event_occurrence
+            {
+                event_id = ev.event_id,
+                venue_id = item.VenueId,
+                date = item.Date,
+                time = TimeOnly.FromTimeSpan(item.Time),
+                price = item.Price,
+                remaining_capacity = venueCapacity,
+                status = "Scheduled"
+            };
+            _db.event_occurrences.Add(occ);
+            await _db.SaveChangesAsync();
+            occurrenceIds.Add(occ.occurrence_id);
+        }
+
+        if (req.Image is not null && req.Image.Length > 0)
+        {
+            await UploadEventImage(ev.event_id, new UploadEventImageRequest { Image = req.Image });
+        }
+        else
+        {
+            await _db.SaveChangesAsync();
+        }
+
+        return Ok(new
+        {
+            eventId = ev.event_id,
+            ev.name,
+            ev.category,
+            ev.description,
+            imageFileName = ev.image,
+            occurrenceIds
+        });
     }
 
     // PUT api/events/{eventId}

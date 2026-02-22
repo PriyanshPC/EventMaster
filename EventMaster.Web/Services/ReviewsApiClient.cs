@@ -20,7 +20,6 @@ public class ReviewsApiClient
 
     public async Task<List<ReviewResponse>> GetForEventAsync(int eventId)
     {
-        // note: your API defines this as absolute route: /api/events/{eventId}/reviews
         var url = $"/api/events/{eventId}/reviews";
         return await _http.GetFromJsonAsync<List<ReviewResponse>>(url) ?? new List<ReviewResponse>();
     }
@@ -43,5 +42,23 @@ public class ReviewsApiClient
             return null;
 
         return await response.Content.ReadFromJsonAsync<ReviewEligibilityResponse>();
+    }
+
+    public async Task<List<OrganizerPendingReviewDto>> GetPendingReviewsAsync(string jwt)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Get, "/api/reviews/mine/pending-replies");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        var resp = await _http.SendAsync(req);
+        if (!resp.IsSuccessStatusCode) return new();
+        return await resp.Content.ReadFromJsonAsync<List<OrganizerPendingReviewDto>>() ?? new();
+    }
+
+    public async Task<bool> SubmitReplyAsync(int reviewId, string replyText, string jwt)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Post, $"/api/reviews/{reviewId}/replies");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        req.Content = JsonContent.Create(new ReplyCreateRequestDto { ReplyText = replyText });
+        var resp = await _http.SendAsync(req);
+        return resp.IsSuccessStatusCode;
     }
 }

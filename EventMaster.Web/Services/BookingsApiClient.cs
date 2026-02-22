@@ -41,4 +41,9 @@ public class BookingsApiClient
         if (!resp.IsSuccessStatusCode) return null;
         return await resp.Content.ReadFromJsonAsync<CancelRefundResponseDto>();
     }
+
+    public async Task<List<VenueResponseDto>> GetVenuesAsync()
+    {
+        return await _http.GetFromJsonAsync<List<VenueResponseDto>>("api/venues") ?? new();
+    }
 }
