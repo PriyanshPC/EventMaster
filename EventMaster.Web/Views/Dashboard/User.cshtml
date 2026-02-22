@@ -4,15 +4,22 @@
     var bookingsActive = Model.ActiveTab != "settings";
     var settingsActive = Model.ActiveTab == "settings";
 
-    string StatusBadgeClass(string status)
+    string StatusTextClass(string? status)
     {
         return status?.Trim().ToLowerInvariant() switch
         {
-            "confirmed" => "text-bg-success",
-            "cancelled" => "text-bg-danger",
-            "completed" => "text-bg-secondary",
-            _ => "text-bg-light text-dark"
+            "confirmed" => "text-success",
+            "scheduled" => "text-success",
+            "cancelled" => "text-danger",
+            "completed" => "text-secondary",
+            _ => "text-primary"
         };
+    }
+
+    string StatusLabel(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status)) return "Unknown";
+        return status.Trim();
     }
 }
 
@@ -64,9 +71,7 @@
                                 <div class="em-card-title">@e.Name</div>
                                 <div class="em-card-sub">@e.SubTitle</div>
                                 <div class="em-card-sub">@e.VenueLine</div>
-                                <div class="mt-2">
-                                    <span class="badge fw-bold @StatusBadgeClass(e.Status)">@e.Status</span>
-                                </div>
+                                <div class="mt-2 fw-bold @StatusTextClass(e.Status)">Status: @StatusLabel(e.Status)</div>
                             </div>
                         </a>
                     </div>
@@ -89,9 +94,7 @@
                                 <div class="em-card-title">@e.Name</div>
                                 <div class="em-card-sub">@e.SubTitle</div>
                                 <div class="em-card-sub">@e.VenueLine</div>
-                                <div class="mt-2">
-                                    <span class="badge fw-bold @StatusBadgeClass(e.Status)">@e.Status</span>
-                                </div>
+                                <div class="mt-2 fw-bold @StatusTextClass(e.Status)">Status: @StatusLabel(e.Status)</div>
                             </div>
                         </a>
                     </div>
@@ -104,14 +107,14 @@
                 <div class="mb-2"><strong>Name:</strong> @Model.Settings.Name</div>
                 <div class="mb-3"><strong>Username:</strong> @Model.Settings.Username</div>
 
-                <form asp-action="UpdateProfile" method="post" class="row g-3">
+                <form asp-action="UpdateProfile" method="post" class="row g-3" id="profileUpdateForm">
                     @Html.AntiForgeryToken()
 
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <div class="input-group">
                             <input id="email" class="form-control" name="email" value="@Model.Settings.Email" readonly required />
-                            <button class="btn btn-outline-primary" type="button" data-edit-target="email" title="Edit email">
+                            <button class="btn btn-outline-primary" type="button" data-mode="email" title="Edit email">
                                 <i class="bi bi-pencil"></i>
                             </button>
                         </div>
@@ -121,27 +124,35 @@
                         <label for="phone" class="form-label">Phone</label>
                         <div class="input-group">
                             <input id="phone" class="form-control" name="phone" value="@Model.Settings.Phone" readonly />
-                            <button class="btn btn-outline-primary" type="button" data-edit-target="phone" title="Edit phone">
+                            <button class="btn btn-outline-primary" type="button" data-mode="phone" title="Edit phone">
                                 <i class="bi bi-pencil"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label for="newPassword" class="form-label mb-0">New Password</label>
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-mode="password" title="Edit password">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                        <input id="newPassword" class="form-control mt-2" type="password" name="newPassword" placeholder="Leave blank to keep" disabled />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="If changing password" disabled />
+                    </div>
+
+                    <div class="col-md-6">
                         <label for="currentPassword" class="form-label">Current Password</label>
                         <input id="currentPassword" class="form-control" type="password" name="currentPassword" placeholder="Required for any changes" required />
                     </div>
-                    <div class="col-md-4">
-                        <label for="newPassword" class="form-label">New Password (optional)</label>
-                        <input id="newPassword" class="form-control" type="password" name="newPassword" placeholder="Leave blank to keep" />
-                    </div>
-                    <div class="col-md-4">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="If changing password" />
-                    </div>
 
-                    <div class="col-12">
+                    <div class="col-12 d-flex gap-2">
                         <button class="btn btn-success" type="submit">Update Profile</button>
+                        <button class="btn btn-outline-secondary" type="button" id="clearEditModeBtn">Clear Edit Mode</button>
                     </div>
                 </form>
             </div>
@@ -151,22 +162,68 @@
 
 @section Scripts {
     <script>
-        document.querySelectorAll('[data-edit-target]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = document.getElementById(btn.dataset.editTarget);
-                if (!target) return;
+        (() => {
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
+            const clearBtn = document.getElementById('clearEditModeBtn');
 
-                target.readOnly = !target.readOnly;
-                if (!target.readOnly) {
-                    target.focus();
-                    target.select?.();
-                    btn.classList.remove('btn-outline-primary');
-                    btn.classList.add('btn-primary');
-                } else {
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-outline-primary');
+            if (!emailInput || !phoneInput || !newPasswordInput || !confirmPasswordInput || modeButtons.length === 0) {
+                return;
+            }
+
+            let activeMode = null;
+
+            function setButtonState(button, isActive) {
+                button.classList.toggle('btn-primary', isActive);
+                button.classList.toggle('btn-outline-primary', !isActive);
+            }
+
+            function applyMode(mode) {
+                activeMode = mode;
+
+                emailInput.readOnly = mode !== 'email';
+                phoneInput.readOnly = mode !== 'phone';
+                newPasswordInput.disabled = mode !== 'password';
+                confirmPasswordInput.disabled = mode !== 'password';
+
+                if (mode !== 'password') {
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
                 }
+
+                modeButtons.forEach(btn => {
+                    const isActive = btn.dataset.mode === mode;
+                    const shouldDisable = mode !== null && !isActive;
+                    btn.disabled = shouldDisable;
+                    setButtonState(btn, isActive);
+                });
+
+                if (mode === 'email') {
+                    emailInput.focus();
+                } else if (mode === 'phone') {
+                    phoneInput.focus();
+                } else if (mode === 'password') {
+                    newPasswordInput.focus();
+                }
+            }
+
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    if (activeMode === mode) {
+                        applyMode(null);
+                        return;
+                    }
+
+                    applyMode(mode);
+                });
             });
-        });
+
+            clearBtn?.addEventListener('click', () => applyMode(null));
+            applyMode(null);
+        })();
     </script>
 }

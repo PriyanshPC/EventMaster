@@ -143,11 +143,22 @@ public class DashboardController : Controller
 
         var normalizedEmail = email?.Trim() ?? string.Empty;
         var normalizedPhone = phone?.Trim();
-        var currentPhone = me.Phone?.Trim();
-
         var emailChanged = !string.Equals(me.Email, normalizedEmail, StringComparison.OrdinalIgnoreCase);
-        var phoneChanged = !string.Equals(currentPhone, normalizedPhone, StringComparison.OrdinalIgnoreCase);
+        var phoneChanged = !string.Equals(me.Phone?.Trim(), normalizedPhone, StringComparison.OrdinalIgnoreCase);
         var wantsPasswordChange = !string.IsNullOrWhiteSpace(newPassword) || !string.IsNullOrWhiteSpace(confirmPassword);
+
+        var changeCount = (emailChanged ? 1 : 0) + (phoneChanged ? 1 : 0) + (wantsPasswordChange ? 1 : 0);
+        if (changeCount > 1)
+        {
+            SetNotification("Update only one item at a time: Email, Phone, or Password.", "danger");
+            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+        }
+
+        if (changeCount == 0)
+        {
+            SetNotification("No changes were detected.", "info");
+            return RedirectToAction(nameof(Customer), new { tab = "settings" });
+        }
 
         if (wantsPasswordChange)
         {
@@ -162,75 +173,25 @@ public class DashboardController : Controller
                 SetNotification("New Password and Confirm Password must match.", "danger");
                 return RedirectToAction(nameof(Customer), new { tab = "settings" });
             }
-        }
 
-        ApiOperationResult? profileResult = null;
-        if (emailChanged || phoneChanged)
-        {
-            profileResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
-            {
-                CurrentPassword = currentPassword,
-                Email = normalizedEmail,
-                Phone = normalizedPhone
-            }, jwt);
-
-            if (!profileResult.Success)
-            {
-                SetNotification(profileResult.Message ?? "Unable to update profile.", "danger");
-                return RedirectToAction(nameof(Customer), new { tab = "settings" });
-            }
-        }
-
-        if (wantsPasswordChange)
-        {
             var passwordResult = await _authApi.ChangePasswordAsync(new ChangePasswordRequest
             {
                 CurrentPassword = currentPassword,
-                NewPassword = newPassword!
+                NewPassword = newPassword
             }, jwt);
 
-            if (!passwordResult.Success)
-            {
-                if (emailChanged || phoneChanged)
-                {
-                    var rollbackResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
-                    {
-                        CurrentPassword = currentPassword,
-                        Email = me.Email,
-                        Phone = me.Phone
-                    }, jwt);
-
-                    if (rollbackResult.Success)
-                    {
-                        SetNotification(passwordResult.Message ?? "Unable to update password. Profile changes were rolled back.", "danger");
-                    }
-                    else
-                    {
-                        var rollbackMessage = rollbackResult.Message ?? "Unable to roll back profile changes.";
-                        SetNotification($"{(passwordResult.Message ?? "Unable to update password.")} {rollbackMessage}", "danger");
-                    }
-                }
-                else
-                {
-                    SetNotification(passwordResult.Message ?? "Unable to update password.", "danger");
-                }
-
-                return RedirectToAction(nameof(Customer), new { tab = "settings" });
-            }
-
-            SetNotification(passwordResult.Message ?? "Profile and password updated successfully.", "success");
+            SetNotification(passwordResult.Message ?? (passwordResult.Success ? "Password updated successfully." : "Unable to update password."), passwordResult.Success ? "success" : "danger");
             return RedirectToAction(nameof(Customer), new { tab = "settings" });
         }
 
-        if (profileResult is not null)
+        var profileResult = await _authApi.UpdateProfileAsync(new UpdateProfileRequest
         {
-            SetNotification(profileResult.Message ?? "Profile updated successfully.", "success");
-        }
-        else
-        {
-            SetNotification("No changes were detected.", "info");
-        }
+            CurrentPassword = currentPassword,
+            Email = emailChanged ? normalizedEmail : me.Email,
+            Phone = phoneChanged ? normalizedPhone : me.Phone
+        }, jwt);
 
+        SetNotification(profileResult.Message ?? (profileResult.Success ? "Profile updated successfully." : "Unable to update profile."), profileResult.Success ? "success" : "danger");
         return RedirectToAction(nameof(Customer), new { tab = "settings" });
     }
 
