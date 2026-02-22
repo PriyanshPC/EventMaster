@@ -15,7 +15,6 @@ public class EventDetailsViewModel
 
     public List<ReviewResponse> Reviews { get; set; } = new();
 
-    // For now: show Add Review only if logged in as CUSTOMER.
-    // Later: we can upgrade to true eligibility check using a dedicated API endpoint.
+    // Add Review button is shown only when backend eligibility says the current CUSTOMER can review.
     public bool ShowAddReviewButton { get; set; }
 }

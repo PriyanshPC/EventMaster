@@ -24,9 +24,8 @@ public class ReviewController : ControllerBase
     // =========================
     // 1) POST /api/reviews
     // Customer can review ONLY if:
-    // - Event has a most recent COMPLETED occurrence
-    // - Customer has a CONFIRMED booking for that occurrence
-    // - Customer has not already reviewed that occurrence
+    // - They attended any completed occurrence of the event
+    // - They have not already reviewed that attended occurrence
     // =========================
     [HttpPost]
     [Authorize(Roles = "CUSTOMER")]
@@ -47,38 +46,13 @@ public class ReviewController : ControllerBase
         if (!evtExists)
             return NotFound(new { message = "Event not found." });
 
-        // Most recent COMPLETED occurrence only
-        var occ = await _db.event_occurrences
-            .Where(o => o.event_id == req.EventId && o.status == "Completed")
-            .OrderByDescending(o => o.date)
-            .ThenByDescending(o => o.time)
-            .FirstOrDefaultAsync();
-
-        if (occ == null)
-            return BadRequest(new { message = "You can only review events that have a completed occurrence." });
-
-        // Must have CONFIRMED booking for that completed occurrence
-        var attended = await _db.bookings.AnyAsync(b =>
-            b.occurrence_id == occ.occurrence_id &&
-            b.customer_id == myUserId &&
-            b.status == "Confirmed"
-        );
-
-        if (!attended)
-            return StatusCode(403, new { message = "Only customers who booked (and attended) the completed event can review it." });
-
-        // Unique (occurrence_id, customer_id)
-        var alreadyReviewed = await _db.reviews.AnyAsync(r =>
-            r.occurrence_id == occ.occurrence_id &&
-            r.customer_id == myUserId
-        );
-
-        if (alreadyReviewed)
-            return Conflict(new { message = "You have already reviewed this event occurrence." });
+        var eligibleOccurrenceId = await FindEligibleOccurrenceIdAsync(req.EventId, myUserId);
+        if (eligibleOccurrenceId == null)
+            return StatusCode(403, new { message = "Only customers who attended a completed event occurrence can review it once." });
 
         var entity = new review
         {
-            occurrence_id = occ.occurrence_id,
+            occurrence_id = eligibleOccurrenceId.Value,
             customer_id = myUserId,
             rating = req.Rating,
             comment = string.IsNullOrWhiteSpace(req.Comment) ? null : req.Comment.Trim(),
@@ -93,7 +67,7 @@ public class ReviewController : ControllerBase
         }
         catch (DbUpdateException)
         {
-            return Conflict(new { message = "You have already reviewed this event occurrence." });
+            return Conflict(new { message = "You have already reviewed all completed occurrences you attended for this event." });
         }
 
         var customer = await _db.users
@@ -115,6 +89,40 @@ public class ReviewController : ControllerBase
         };
 
         return CreatedAtAction(nameof(GetById), new { id = entity.review_id }, resp);
+    }
+
+    // GET /api/reviews/eligibility/{eventId}
+    // Returns whether CURRENT authenticated customer can add a review.
+    [HttpGet("eligibility/{eventId:int}")]
+    [Authorize(Roles = "CUSTOMER")]
+    public async Task<ActionResult<ReviewEligibilityResponse>> GetEligibility(int eventId)
+    {
+        var evtExists = await _db.events.AnyAsync(e => e.event_id == eventId);
+        if (!evtExists)
+            return NotFound(new { message = "Event not found." });
+
+        var eligibleOccurrenceId = await FindEligibleOccurrenceIdAsync(eventId, _me.UserId);
+
+        return Ok(new ReviewEligibilityResponse
+        {
+            CanAddReview = eligibleOccurrenceId != null,
+            EligibleOccurrenceId = eligibleOccurrenceId
+        });
+    }
+
+    private async Task<int?> FindEligibleOccurrenceIdAsync(int eventId, int customerId)
+    {
+        return await (
+            from occ in _db.event_occurrences
+            join b in _db.bookings on occ.occurrence_id equals b.occurrence_id
+            where occ.event_id == eventId
+                  && occ.status == "Completed"
+                  && b.customer_id == customerId
+                  && b.status == "Confirmed"
+                  && !_db.reviews.Any(r => r.occurrence_id == occ.occurrence_id && r.customer_id == customerId)
+            orderby occ.date descending, occ.time descending, occ.occurrence_id descending
+            select (int?)occ.occurrence_id
+        ).FirstOrDefaultAsync();
     }
 
     // =========================
@@ -266,6 +274,6 @@ public class ReviewController : ControllerBase
             CreatedAt = entity.created_at
         };
 
-        return Created($"/api/replies/{entity.reply_id}", resp);
+        return CreatedAtAction(nameof(GetById), new { id = reviewId }, resp);
     }
 }
