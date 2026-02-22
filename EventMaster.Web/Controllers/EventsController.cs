@@ -148,10 +148,21 @@ public class EventsController : Controller
         var details = await _eventsApi.GetOccurrenceDetailsAsync(eventId, occurrenceId);
         if (details is null) return NotFound();
 
-        var reviews = await _reviewsApi.GetForEventAsync(eventId);
+        var reviews = (await _reviewsApi.GetForEventAsync(eventId))
+            .OrderByDescending(r => r.CreatedAt)
+            .ThenByDescending(r => r.ReviewId)
+            .Select(r =>
+            {
+                r.Replies = (r.Replies ?? new())
+                    .OrderBy(rep => rep.CreatedAt)
+                    .ThenBy(rep => rep.ReplyId)
+                    .ToList();
+                return r;
+            })
+            .ToList();
 
         var canAddReview = false;
-        if (User.Identity?.IsAuthenticated == true && User.IsInRole("CUSTOMER"))
+        if (User.Identity?.IsAuthenticated == true)
         {
             var eligibility = await _reviewsApi.GetEligibilityAsync(eventId);
             canAddReview = eligibility?.CanAddReview == true;
