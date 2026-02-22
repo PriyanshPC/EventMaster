@@ -127,6 +127,7 @@ public class AccountController : Controller
             return returnUrl;
 
         if (string.Equals(role, "CUSTOMER", StringComparison.OrdinalIgnoreCase)) return "/Dashboard/Customer";
+        if (string.Equals(role, "ORGANIZER", StringComparison.OrdinalIgnoreCase)) return "/Dashboard/Organizer";
         return "/";
     }
 }

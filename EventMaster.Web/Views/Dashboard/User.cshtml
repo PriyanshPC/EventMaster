@@ -108,6 +108,7 @@
 
                 <form asp-action="UpdateProfile" method="post" class="row g-3" id="profileUpdateForm">
                     @Html.AntiForgeryToken()
+                    <input type="hidden" name="dashboardType" value="customer" />
 
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
