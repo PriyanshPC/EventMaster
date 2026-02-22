@@ -150,6 +150,13 @@ public class EventsController : Controller
 
         var reviews = await _reviewsApi.GetForEventAsync(eventId);
 
+        var canAddReview = false;
+        if (User.Identity?.IsAuthenticated == true && User.IsInRole("CUSTOMER"))
+        {
+            var eligibility = await _reviewsApi.GetEligibilityAsync(eventId);
+            canAddReview = eligibility?.CanAddReview == true;
+        }
+
         // 12-hr format
         var time12hr = DateTime.Today.Add(details.Time).ToString("hh:mm tt");
         var headerWhen = $"{details.Date:MMM d, yyyy} • {time12hr}";
@@ -167,7 +174,7 @@ public class EventsController : Controller
             HeaderWhere = headerWhere,
             ImageUrl = imageUrl,
             Reviews = reviews,
-            ShowAddReviewButton = User.Identity?.IsAuthenticated == true && User.IsInRole("CUSTOMER")
+            ShowAddReviewButton = canAddReview
         };
 
         return View(vm);

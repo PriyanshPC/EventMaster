@@ -58,3 +58,8 @@ public class ReplyResponse
     public string ReplyText { get; set; } = "";
     public DateTime CreatedAt { get; set; }
 }
+public class ReviewEligibilityResponse
+{
+    public bool CanAddReview { get; set; }
+    public int? EligibleOccurrenceId { get; set; }
+}
