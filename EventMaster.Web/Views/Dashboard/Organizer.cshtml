@@ -1,0 +1,279 @@
+@model EventMaster.Web.Models.OrganizerDashboardViewModel
+@{
+    ViewData["Title"] = "Organizer Dashboard";
+    var eventsActive = Model.ActiveTab == "events";
+    var addEventActive = Model.ActiveTab == "add-event";
+    var reviewsActive = Model.ActiveTab == "reviews";
+    var settingsActive = Model.ActiveTab == "settings";
+
+    string BadgeClass(string status) => status.ToLowerInvariant() switch
+    {
+        "scheduled" => "bg-success",
+        "cancelled" => "bg-danger",
+        "completed" => "bg-secondary",
+        _ => "bg-dark"
+    };
+
+    var timeOptions = new[]
+    {
+        "12:00 AM","01:00 AM","02:00 AM","03:00 AM","04:00 AM","05:00 AM","06:00 AM","07:00 AM","08:00 AM","09:00 AM","10:00 AM","11:00 AM",
+        "12:00 PM","01:00 PM","02:00 PM","03:00 PM","04:00 PM","05:00 PM","06:00 PM","07:00 PM","08:00 PM","09:00 PM","10:00 PM","11:00 PM"
+    };
+}
+
+<div class="container my-4">
+    <h1 class="h4 fw-bold mb-3">Organizer Dashboard</h1>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link @(eventsActive ? "active" : "")" asp-action="Organizer" asp-route-tab="events">Events</a></li>
+        <li class="nav-item"><a class="nav-link @(addEventActive ? "active" : "")" asp-action="Organizer" asp-route-tab="add-event">Add Event</a></li>
+        <li class="nav-item"><a class="nav-link @(reviewsActive ? "active" : "")" asp-action="Organizer" asp-route-tab="reviews">Reviews</a></li>
+        <li class="nav-item"><a class="nav-link @(settingsActive ? "active" : "")" asp-action="Organizer" asp-route-tab="settings">Settings</a></li>
+    </ul>
+
+    @if (eventsActive)
+    {
+        <div class="card p-3">
+            @if (Model.Events.Count == 0)
+            {
+                <div class="alert alert-info mb-0">No events yet.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr><th>Name</th><th>Category</th><th>Created</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var evt in Model.Events)
+                            {
+                                <tr>
+                                    <td>@evt.Name</td>
+                                    <td>@evt.Category</td>
+                                    <td>@evt.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        @foreach (var status in evt.OccurrenceStatuses.Distinct(StringComparer.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge fw-bold @BadgeClass(status) me-1">@status</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+    @if (addEventActive)
+    {
+        <div class="card p-3">
+            <form asp-action="UploadEvent" method="post" enctype="multipart/form-data" id="uploadEventForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input class="form-control" name="name" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Select category</option>
+                            @foreach (var cat in Model.AddEventForm.Categories)
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Image upload</label>
+                        <input type="file" class="form-control" name="image" accept=".png,.jpg,.jpeg" />
+                    </div>
+                </div>
+
+                <hr />
+                <h2 class="h6">Occurrences</h2>
+                <div class="table-responsive">
+                    <table class="table" id="occurrencesTable">
+                        <thead>
+                            <tr><th>Date</th><th>Time</th><th>Venue</th><th>Price</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="date" class="form-control" name="occurrenceDate" required /></td>
+                                <td>
+                                    <select class="form-select" name="occurrenceTime" required>
+                                        <option value="">Select time</option>
+                                        @foreach (var t in timeOptions)
+                                        {
+                                            <option value="@t">@t</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="occurrenceVenueId" required>
+                                        <option value="">Select venue</option>
+                                        @foreach (var v in Model.AddEventForm.Venues)
+                                        {
+                                            <option value="@v.VenueId">@v.Name</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><input type="number" class="form-control" step="0.01" min="0" name="occurrencePrice" required /></td>
+                                <td><button class="btn btn-outline-danger remove-row" type="button">X</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary" id="addRowBtn">+</button>
+                <div class="mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Upload Event</button>
+                </div>
+            </form>
+
+            <form asp-action="ClearOrganizerForm" method="post" class="mt-2">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Clear form</button>
+            </form>
+        </div>
+    }
+
+    @if (reviewsActive)
+    {
+        <div class="card p-3">
+            @if (Model.PendingReviews.Count == 0)
+            {
+                <div class="alert alert-info mb-0">No pending reviews without replies.</div>
+            }
+            else
+            {
+                @foreach (var review in Model.PendingReviews)
+                {
+                    <div class="border rounded p-3 mb-3">
+                        <div class="fw-semibold">@review.EventName</div>
+                        <div class="text-muted small">@review.CustomerName • @review.Rating/5 • @review.CreatedAt.ToLocalTime().ToString("g")</div>
+                        <p class="mb-2">@(string.IsNullOrWhiteSpace(review.Comment) ? "(No comment)" : review.Comment)</p>
+                        <form asp-action="SubmitReply" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="reviewId" value="@review.ReviewId" />
+                            <input class="form-control" name="replyText" placeholder="Write reply" required />
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i></button>
+                        </form>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    @if (settingsActive)
+    {
+        <div class="card p-3">
+            <div class="mb-2"><strong>Name:</strong> @Model.Settings.Name</div>
+            <div class="mb-3"><strong>Username:</strong> @Model.Settings.Username</div>
+
+            <form asp-action="UpdateProfile" method="post" class="row g-3" id="profileUpdateForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="dashboardType" value="organizer" />
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-group">
+                        <input id="email" class="form-control" name="email" value="@Model.Settings.Email" readonly required />
+                        <button class="btn btn-outline-primary" type="button" data-mode="email" title="Edit email"><i class="bi bi-pencil"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <div class="input-group">
+                        <input id="phone" class="form-control" name="phone" value="@Model.Settings.Phone" readonly />
+                        <button class="btn btn-outline-primary" type="button" data-mode="phone" title="Edit phone"><i class="bi bi-pencil"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <div class="input-group">
+                        <input id="newPassword" class="form-control" type="password" name="newPassword" placeholder="Leave blank to keep" disabled />
+                        <button class="btn btn-outline-primary" type="button" data-mode="password" title="Edit password"><i class="bi bi-pencil"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="If changing password" disabled />
+                </div>
+                <div class="col-md-6">
+                    <label for="currentPassword" class="form-label">Current Password</label>
+                    <input id="currentPassword" class="form-control" type="password" name="currentPassword" placeholder="Required for any changes" required />
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success" type="submit">Update Profile</button>
+                    <button class="btn btn-outline-secondary" type="button" id="clearEditModeBtn">Clear Edit Mode</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const addBtn = document.getElementById('addRowBtn');
+            const tableBody = document.querySelector('#occurrencesTable tbody');
+            if (addBtn && tableBody) {
+                addBtn.addEventListener('click', () => {
+                    const row = tableBody.rows[0].cloneNode(true);
+                    row.querySelectorAll('input, select').forEach(el => el.value = '');
+                    tableBody.appendChild(row);
+                });
+
+                tableBody.addEventListener('click', (e) => {
+                    if (!(e.target instanceof HTMLElement)) return;
+                    if (!e.target.classList.contains('remove-row')) return;
+                    if (tableBody.rows.length === 1) return;
+                    e.target.closest('tr')?.remove();
+                });
+            }
+
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
+            const clearBtn = document.getElementById('clearEditModeBtn');
+            let activeMode = null;
+
+            function setButtonState(button, isActive) {
+                button.classList.toggle('btn-primary', isActive);
+                button.classList.toggle('btn-outline-primary', !isActive);
+            }
+
+            function applyMode(mode) {
+                activeMode = mode;
+                emailInput.readOnly = mode !== 'email';
+                phoneInput.readOnly = mode !== 'phone';
+                newPasswordInput.disabled = mode !== 'password';
+                confirmPasswordInput.disabled = mode !== 'password';
+                if (mode !== 'password') {
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                }
+                modeButtons.forEach(btn => {
+                    const isActive = btn.dataset.mode === mode;
+                    btn.disabled = mode !== null && !isActive;
+                    setButtonState(btn, isActive);
+                });
+            }
+
+            modeButtons.forEach(btn => btn.addEventListener('click', () => applyMode(activeMode === btn.dataset.mode ? null : btn.dataset.mode)));
+            clearBtn?.addEventListener('click', () => applyMode(null));
+            if (emailInput && phoneInput && newPasswordInput && confirmPasswordInput && modeButtons.length > 0) {
+                applyMode(null);
+            }
+        })();
+    </script>
+}
