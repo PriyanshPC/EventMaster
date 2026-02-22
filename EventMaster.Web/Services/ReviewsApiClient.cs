@@ -61,4 +61,15 @@ public class ReviewsApiClient
         var resp = await _http.SendAsync(req);
         return resp.IsSuccessStatusCode;
     }
+
+    public async Task<(bool Success, string? ErrorMessage)> SubmitReviewAsync(ReviewCreateRequestDto payload, string jwt)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/reviews");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        req.Content = JsonContent.Create(payload);
+        var resp = await _http.SendAsync(req);
+        if (resp.IsSuccessStatusCode) return (true, null);
+        return (false, "Unable to submit review.");
+    }
+
 }

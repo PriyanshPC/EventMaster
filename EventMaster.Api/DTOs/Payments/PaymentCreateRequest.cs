@@ -1,8 +1,10 @@
-﻿namespace EventMaster.Api.DTOs.Payments;
+namespace EventMaster.Api.DTOs.Payments;
 
 public class PaymentCreateRequest
 {
-    public int BookingId { get; set; }
+    public int OccurrenceId { get; set; }
+    public int Quantity { get; set; }
+    public List<string>? Seats { get; set; }
 
     // coupon is optional
     public string? CouponCode { get; set; }

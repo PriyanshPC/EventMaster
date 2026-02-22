@@ -1,0 +1,67 @@
+@model EventMaster.Web.Models.BookingPageViewModel
+@{
+    ViewData["Title"] = "Booking";
+    var rows = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Take(10).ToList();
+    var seatsPerRow = 10;
+}
+<div class="container my-4">
+    <div class="card mb-4">
+        <div class="row g-0">
+            <div class="col-12 col-lg-3"><img class="img-fluid h-100 w-100 object-fit-cover" src="@Model.ImageUrl" alt="@Model.Details.EventName" /></div>
+            <div class="col-12 col-lg-9"><div class="card-body">
+                <h1 class="h4">@Model.Details.EventName</h1>
+                <div class="text-muted">@Model.HeaderWhen</div><div class="text-muted">@Model.HeaderWhere</div>
+                <div class="fw-semibold mt-2">$@Model.Details.Price per ticket</div>
+            </div></div>
+        </div>
+    </div>
+
+    <form method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="eventId" value="@Model.EventId" />
+        <input type="hidden" name="occurrenceId" value="@Model.OccurrenceId" />
+        <div class="col-12 col-lg-8">
+            <div class="card"><div class="card-body">
+                <h2 class="h5">Booking Details</h2>
+                <label class="form-label">Tickets</label>
+                <input class="form-control" type="number" min="1" max="10" asp-for="Input.Quantity" placeholder="Max 10 tickets per booking" />
+                <span class="text-danger" asp-validation-for="Input.Quantity"></span>
+
+                @if (Model.Details.Seating)
+                {
+                    <div class="mt-3">
+                        <div class="fw-semibold mb-2">Select Seats</div>
+                        <span class="text-danger" asp-validation-for="Input.Seats"></span>
+                        <div class="table-responsive"><table class="table table-sm align-middle text-center">
+                            @foreach (var row in rows)
+                            {
+                                <tr>
+                                    <th>@row</th>
+                                    @for (var n = 1; n <= seatsPerRow; n++)
+                                    {
+                                        var seat = $"{row}{n}";
+                                        var isOccupied = Model.OccupiedSeats.Contains(seat);
+                                        var isChecked = Model.RequestedSeats.Contains(seat, StringComparer.OrdinalIgnoreCase);
+                                        <td>
+                                            <input class="btn-check" type="checkbox" name="Input.Seats" value="@seat" id="seat_@seat" @(isOccupied ? "disabled" : "") @(isChecked ? "checked" : "") />
+                                            <label class="btn btn-sm @(isOccupied ? "btn-secondary" : "btn-outline-primary")" for="seat_@seat">@n</label>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </table></div>
+                    </div>
+                }
+            </div></div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card sticky-top" style="top:80px;"><div class="card-body">
+                <h3 class="h6">Total</h3>
+                <div class="display-6">$@Model.TotalAmount</div>
+                <button class="btn btn-success w-100" type="submit">Proceed to Checkout</button>
+            </div></div>
+        </div>
+    </form>
+</div>
+<partial name="_ValidationScriptsPartial" />

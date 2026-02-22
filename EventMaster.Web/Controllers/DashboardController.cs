@@ -309,7 +309,7 @@ public class DashboardController : Controller
             CanCancel = details.CanCancel,
             IsPastBooking = details.Date.ToDateTime(details.Time) < DateTime.UtcNow,
             ShowAddReviewButton = User.IsInRole("CUSTOMER") && details.Date.ToDateTime(details.Time) < DateTime.UtcNow,
-            AddReviewUrl = $"/Reviews/Create?eventId={details.EventId}",
+            AddReviewUrl = $"/Reviews/Create?eventId={details.EventId}&occurrenceId={details.OccurrenceId}",
             RefundedAmount = details.RefundedAmount,
             IsRefundPending = details.IsRefundPending
         };

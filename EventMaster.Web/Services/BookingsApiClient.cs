@@ -46,4 +46,14 @@ public class BookingsApiClient
     {
         return await _http.GetFromJsonAsync<List<VenueResponseDto>>("api/venues") ?? new();
     }
+
+    public async Task<BookingResponseDto?> CreateBookingAsync(BookingCreateRequestDto payload, string jwt)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Post, "api/bookings");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        req.Content = JsonContent.Create(payload);
+        var resp = await _http.SendAsync(req);
+        if (!resp.IsSuccessStatusCode) return null;
+        return await resp.Content.ReadFromJsonAsync<BookingResponseDto>();
+    }
 }
