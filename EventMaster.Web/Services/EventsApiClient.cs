@@ -1,6 +1,7 @@
 ﻿using EventMaster.Web.Services.ApiDtos;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.IO;
 
 namespace EventMaster.Web.Services;
 
@@ -60,7 +61,8 @@ public class EventsApiClient
         if (imageStream is not null && !string.IsNullOrWhiteSpace(imageFileName))
         {
             var imageContent = new StreamContent(imageStream);
-            imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            var ext = Path.GetExtension(imageFileName).ToLowerInvariant();
+            imageContent.Headers.ContentType = new MediaTypeHeaderValue(ext == ".png" ? "image/png" : "image/jpeg");
             form.Add(imageContent, "Image", imageFileName);
         }
 
@@ -71,5 +73,13 @@ public class EventsApiClient
         if (!resp.IsSuccessStatusCode) return null;
 
         return await resp.Content.ReadFromJsonAsync<OrganizerCreatedEventSeriesResponseDto>();
+    }
+
+    public async Task<bool> CancelOccurrenceAsync(int eventId, int occurrenceId, string jwt)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Delete, $"api/events/{eventId}/occurrences/{occurrenceId}");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        var resp = await _http.SendAsync(req);
+        return resp.IsSuccessStatusCode;
     }
 }

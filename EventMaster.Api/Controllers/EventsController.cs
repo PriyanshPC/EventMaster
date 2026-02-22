@@ -439,7 +439,19 @@ public class EventsController : ControllerBase
                 imageFileName = NormalizeOrGenerateImageFileName(e.event_id, e.image),
                 createdAt = e.created_at,
                 updatedAt = e.updated_at,
-                occurrenceStatuses = e.event_occurrences.Select(o => o.status).Distinct().ToList()
+                occurrences = e.event_occurrences
+                    .OrderBy(o => o.date)
+                    .ThenBy(o => o.time)
+                    .Select(o => new
+                    {
+                        occurrenceId = o.occurrence_id,
+                        date = o.date,
+                        time = o.time,
+                        venueName = o.venue.name,
+                        venueCity = o.venue.city,
+                        status = o.status
+                    })
+                    .ToList()
             })
             .ToListAsync();
 

@@ -16,7 +16,7 @@ public class DashboardController : Controller
     private readonly EventsApiClient _eventsApi;
     private readonly ReviewsApiClient _reviewsApi;
     private readonly IConfiguration _config;
-    private static readonly string[] AllowedCategories = ["Music", "Sports", "Tech", "Arts", "Food", "Other"];
+    private static readonly string[] AllowedCategories = ["Comedy", "Parties", "Sports", "Concepts", "Theater"];
 
     public DashboardController(BookingsApiClient bookingsApi, AuthApiClient authApi, EventsApiClient eventsApi, ReviewsApiClient reviewsApi, IConfiguration config)
     {
@@ -100,14 +100,20 @@ public class DashboardController : Controller
                 Email = me.Email,
                 Phone = me.Phone
             },
-            Events = myEvents.Select(e => new OrganizerEventListItemViewModel
-            {
-                EventId = e.EventId,
-                Name = e.Name,
-                Category = e.Category,
-                CreatedAt = e.CreatedAt,
-                OccurrenceStatuses = e.OccurrenceStatuses
-            }).ToList(),
+            EventCards = myEvents
+                .SelectMany(e => e.Occurrences.Select(o => new OrganizerEventCardViewModel
+                {
+                    EventId = e.EventId,
+                    OccurrenceId = o.OccurrenceId,
+                    Name = e.Name,
+                    Category = e.Category,
+                    SubTitle = $"{o.Date:MMM d} • {DateTime.Today.Add(o.Time.ToTimeSpan()):hh:mm tt}",
+                    VenueLine = $"{o.VenueName} • {o.VenueCity}",
+                    Status = o.Status,
+                    ImageUrl = $"{(_config["Api:PublicBaseUrl"] ?? _config["Api:BaseUrl"] ?? "http://127.0.0.1:8081/").TrimEnd('/')}/api/events/{e.EventId}/image"
+                }))
+                .OrderBy(x => x.SubTitle)
+                .ToList(),
             PendingReviews = pendingReviews.Select(r => new OrganizerPendingReviewViewModel
             {
                 ReviewId = r.ReviewId,
@@ -232,6 +238,19 @@ public class DashboardController : Controller
         var ok = await _reviewsApi.SubmitReplyAsync(reviewId, replyText, jwt);
         SetNotification(ok ? "Reply submitted" : "Unable to submit reply.", ok ? "success" : "danger");
         return RedirectToAction(nameof(Organizer), new { tab = "reviews" });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "ORGANIZER")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelOccurrence(int eventId, int occurrenceId)
+    {
+        var jwt = User.FindFirstValue("access_token");
+        if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
+
+        var ok = await _eventsApi.CancelOccurrenceAsync(eventId, occurrenceId, jwt);
+        SetNotification(ok ? "Occurrence cancelled successfully." : "Unable to cancel occurrence.", ok ? "success" : "danger");
+        return RedirectToAction(nameof(Organizer), new { tab = "events" });
     }
 
     [HttpGet]

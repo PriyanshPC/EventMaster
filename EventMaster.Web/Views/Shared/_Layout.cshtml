@@ -31,7 +31,16 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Customer">Dashboard</a></li>
+                        <li>
+                            @if (User.IsInRole("ORGANIZER"))
+                            {
+                                <a class="dropdown-item" asp-controller="Dashboard" asp-action="Organizer">Dashboard</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" asp-controller="Dashboard" asp-action="Customer">Dashboard</a>
+                            }
+                        </li>
                         <li>
                             <form asp-controller="Account" asp-action="Logout" method="post" class="px-3 py-1">
                                 @Html.AntiForgeryToken()
