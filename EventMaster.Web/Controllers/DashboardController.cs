@@ -2,6 +2,7 @@ using EventMaster.Web.Models;
 using EventMaster.Web.Services;
 using EventMaster.Web.Services.ApiDtos;
 using Microsoft.AspNetCore.Authorization;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -89,7 +90,7 @@ public class DashboardController : Controller
             OccurrenceId = details.OccurrenceId,
             EventName = details.EventName,
             Image = $"{apiBase}/api/events/{details.EventId}/image",
-            Status = details.Status,
+            Status = (details.BookingStatus == "Confirmed" && details.Status == "Completed") ? details.Status : details.BookingStatus,
             DateTimeLine = $"{details.Date:MMM d, yyyy} • {DateTime.Today.Add(details.Time.ToTimeSpan()):hh:mm tt}",
             VenueLine = $"{details.VenueName}, {details.VenueAddress}, {details.VenueCity}, {details.VenueProvince}",
             NumberOfTickets = details.NumberOfTickets,
@@ -97,7 +98,12 @@ public class DashboardController : Controller
             CardSummary = details.CardSummary ?? "N/A",
             TotalAmount = details.TotalAmount,
             TicketNumber = details.TicketNumber,
-            CanCancel = details.Status == "Scheduled" && details.Date.ToDateTime(details.Time) - DateTime.UtcNow >= TimeSpan.FromHours(24)
+            CanCancel = details.CanCancel,
+            IsPastBooking = details.Date.ToDateTime(details.Time) < DateTime.UtcNow,
+            ShowAddReviewButton = User.IsInRole("CUSTOMER") && details.Date.ToDateTime(details.Time) < DateTime.UtcNow,
+            AddReviewUrl = $"/Reviews/Create?eventId={details.EventId}",
+            RefundedAmount = details.RefundedAmount,
+            IsRefundPending = details.IsRefundPending
         };
 
         return View(vm);
@@ -118,7 +124,7 @@ public class DashboardController : Controller
         }
 
         SetNotification($"{resp.Message} Refunded: ${resp.RefundedAmount:0.00}", "success");
-        return RedirectToAction(nameof(BookingDetails), new { bookingId });
+        return RedirectToAction(nameof(Customer), new { tab = "bookings" });
     }
 
     [HttpPost]

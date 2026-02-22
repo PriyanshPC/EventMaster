@@ -238,6 +238,7 @@ public class BookingsController : ControllerBase
             EventName = details.Event.name,
             Image = details.Event.image,
             Status = details.Occurrence.status,
+            BookingStatus = details.Booking.status,
             Date = details.Occurrence.date,
             Time = details.Occurrence.time,
             VenueName = details.Venue.name,
@@ -248,7 +249,12 @@ public class BookingsController : ControllerBase
             SeatsSelected = details.Booking.seats_occupied,
             TotalAmount = details.Booking.total_amount,
             TicketNumber = details.Booking.ticket_number,
-            CardSummary = payment?.card
+            CardSummary = payment?.card,
+            CanCancel = details.Booking.status == "Confirmed"
+                && details.Occurrence.status == "Scheduled"
+                && details.Occurrence.date.ToDateTime(details.Occurrence.time) - DateTime.UtcNow >= TimeSpan.FromHours(24),
+            RefundedAmount = payment != null && payment.status == "Refunded" ? Math.Abs(payment.amount) : null,
+            IsRefundPending = payment != null && payment.status == "Refunded"
         });
     }
 
@@ -311,7 +317,7 @@ public class BookingsController : ControllerBase
     // - Only Scheduled occurrence
     // - Must be >= 24 hours before start
     // Refund:
-    // - Refund = last SUCCESS payment amount * 0.85
+    // - Refund = last SUCCESS payment amount * 1.00
     // - Insert payments row: status=Refunded, amount = -refund
     // =========================
     [HttpPost("{id:int}/cancel-refund")]
@@ -374,8 +380,8 @@ public class BookingsController : ControllerBase
 
         b.status = "Cancelled";
 
-        // Refund amount: 15% cancellation fee (includes tax), refund stored as negative amount row
-        var refund = Math.Round(paid.amount * 0.85m, 2);
+        // Refund amount: full refund, stored as a negative amount payment row
+        var refund = Math.Round(paid.amount, 2);
 
         var refundRow = new payment
         {
@@ -383,7 +389,7 @@ public class BookingsController : ControllerBase
             amount = -refund,
             card = paid.card, // same card used for booking
             status = "Refunded",
-            details = "Customer Cancelled (15% fee)",
+            details = "Customer Cancelled - Full Refund",
             created_at = DateTime.UtcNow
         };
 
