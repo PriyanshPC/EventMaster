@@ -43,3 +43,8 @@ public class ChangePasswordRequest
     public string CurrentPassword { get; set; } = "";
     public string NewPassword { get; set; } = "";
 }
+public class ApiOperationResult
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+}
