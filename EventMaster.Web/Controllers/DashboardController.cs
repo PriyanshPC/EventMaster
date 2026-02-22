@@ -3,7 +3,6 @@ using EventMaster.Web.Services;
 using EventMaster.Web.Services.ApiDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
 
 namespace EventMaster.Web.Controllers;
@@ -25,6 +24,8 @@ public class DashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> Customer(string tab = "bookings", string? edit = null, string? message = null, string? error = null)
     {
+        SetNotificationFromLegacyParams(message, error);
+
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
@@ -55,8 +56,6 @@ public class DashboardController : Controller
         var vm = new CustomerDashboardViewModel
         {
             ActiveTab = tab,
-            Message = message,
-            Error = error,
             Settings = new MeSettingsViewModel
             {
                 Name = me.Name,
@@ -75,6 +74,8 @@ public class DashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> BookingDetails(int bookingId, string? message = null, string? error = null)
     {
+        SetNotificationFromLegacyParams(message, error);
+
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
@@ -97,13 +98,12 @@ public class DashboardController : Controller
             CardSummary = details.CardSummary ?? "N/A",
             TotalAmount = details.TotalAmount,
             TicketNumber = details.TicketNumber,
-            CanCancel = details.Status == "Scheduled" && details.Date.ToDateTime(details.Time) - DateTime.UtcNow >= TimeSpan.FromHours(24),
-            Message = message,
-            Error = error
+            CanCancel = details.Status == "Scheduled" && details.Date.ToDateTime(details.Time) - DateTime.UtcNow >= TimeSpan.FromHours(24)
         };
 
         return View(vm);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelBooking(int bookingId)
@@ -113,9 +113,13 @@ public class DashboardController : Controller
 
         var resp = await _bookingsApi.CancelAndRefundAsync(bookingId, jwt);
         if (resp is null)
-            return RedirectToAction(nameof(BookingDetails), new { bookingId, error = "Unable to cancel booking." });
+        {
+            SetNotification("Unable to cancel booking.", "danger");
+            return RedirectToAction(nameof(BookingDetails), new { bookingId });
+        }
 
-        return RedirectToAction(nameof(BookingDetails), new { bookingId, message = $"{resp.Message} Refunded: ${resp.RefundedAmount:0.00}" });
+        SetNotification($"{resp.Message} Refunded: ${resp.RefundedAmount:0.00}", "success");
+        return RedirectToAction(nameof(BookingDetails), new { bookingId });
     }
 
     [HttpPost]
@@ -137,7 +141,10 @@ public class DashboardController : Controller
     public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
     {
         if (newPassword != confirmPassword)
-            return RedirectToAction(nameof(Customer), new { tab = "settings", edit = "password", error = "New Password and Confirm Password must match." });
+        {
+            SetNotification("New Password and Confirm Password must match.", "danger");
+            return RedirectToAction(nameof(Customer), new { tab = "settings", edit = "password" });
+        }
 
         var jwt = User.FindFirstValue("access_token");
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
@@ -148,12 +155,8 @@ public class DashboardController : Controller
             NewPassword = newPassword
         }, jwt);
 
-        return RedirectToAction(nameof(Customer), new
-        {
-            tab = "settings",
-            message = ok ? "Password updated successfully." : null,
-            error = ok ? null : "Unable to update password."
-        });
+        SetNotification(ok ? "Password updated successfully." : "Unable to update password.", ok ? "success" : "danger");
+        return RedirectToAction(nameof(Customer), new { tab = "settings" });
     }
 
     private async Task<IActionResult> UpdateProfileInternal(UpdateProfileRequest req, string mode)
@@ -162,12 +165,27 @@ public class DashboardController : Controller
         if (string.IsNullOrWhiteSpace(jwt)) return RedirectToAction("Login", "Account");
 
         var ok = await _authApi.UpdateProfileAsync(req, jwt);
+        SetNotification(ok ? "Profile updated successfully." : "Unable to update profile.", ok ? "success" : "danger");
+
         return RedirectToAction(nameof(Customer), new
         {
             tab = "settings",
-            message = ok ? "Profile updated successfully." : null,
-            error = ok ? null : "Unable to update profile.",
             edit = ok ? null : mode
         });
+    }
+
+    private void SetNotificationFromLegacyParams(string? message, string? error)
+    {
+        if (!string.IsNullOrWhiteSpace(message))
+            SetNotification(message, "success");
+        else if (!string.IsNullOrWhiteSpace(error))
+            SetNotification(error, "danger");
+    }
+
+    private void SetNotification(string message, string type = "info", int delayMilliseconds = 5000)
+    {
+        TempData["Notification.Message"] = message;
+        TempData["Notification.Type"] = type;
+        TempData["Notification.Delay"] = delayMilliseconds;
     }
 }

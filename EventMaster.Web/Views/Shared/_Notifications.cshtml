@@ -1,0 +1,21 @@
+@using System.Text.Json
+@{
+    var message = TempData["Notification.Message"] as string;
+    var type = TempData["Notification.Type"] as string ?? "info";
+    var delay = TempData["Notification.Delay"] as int? ?? 5000;
+}
+
+<div id="em-toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <script>
+        window.emInitialNotifications = window.emInitialNotifications || [];
+        window.emInitialNotifications.push(@Html.Raw(JsonSerializer.Serialize(new
+        {
+            message,
+            type,
+            delay
+        })));
+    </script>
+}
