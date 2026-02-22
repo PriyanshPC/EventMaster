@@ -58,27 +58,32 @@ public class BookingsController : ControllerBase
     // Get a specific booking of the logged-in customer
     // =========================
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<BookingResponse>> GetMyBookingById(int id)
+    public async Task<ActionResult<BookingDetailsResponse>> GetMyBookingById(int id)
     {
         var myUserId = _me.UserId;
 
-        var booking = await _db.bookings
-            .AsNoTracking()
-            .Where(b => b.booking_id == id && b.customer_id == myUserId)
-            .Select(b => new BookingResponse
+        var booking = await (
+            from b in _db.bookings.AsNoTracking()
+            join occ in _db.event_occurrences.AsNoTracking() on b.occurrence_id equals occ.occurrence_id
+            join ev in _db.events.AsNoTracking() on occ.event_id equals ev.event_id
+            join v in _db.venues.AsNoTracking() on occ.venue_id equals v.venue_id
+            where b.booking_id == id && b.customer_id == myUserId
+            select new BookingDetailsResponse
             {
                 BookingId = b.booking_id,
-                OccurrenceId = b.occurrence_id,
-                CustomerId = b.customer_id,
+                OccurrenceId = occ.occurrence_id,
+                EventId = ev.event_id,
+                EventName = ev.name,
+                Status = occ.status,
+                Date = occ.date,
+                Time = occ.time,
+                VenueName = v.name,
+                VenueAddress = v.address,
+                VenueCity = v.city,
                 Quantity = b.quantity,
-                SeatsOccupied = b.seats_occupied,
-                Status = b.status,
-                TotalAmount = b.total_amount,
-                TicketNumber = b.ticket_number,
-                CreatedAt = b.created_at,
-                UpdatedAt = b.updated_at
-            })
-            .FirstOrDefaultAsync();
+                SeatsOccupied = b.seats_occupied
+            }
+        ).FirstOrDefaultAsync();
 
         if (booking == null)
             return NotFound(new { message = "Booking not found." });

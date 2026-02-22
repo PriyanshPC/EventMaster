@@ -17,6 +17,14 @@
         {
             <div class="alert alert-danger mb-0">@Model.Error</div>
         }
+        else if (TempData["ToastError"] != null)
+        {
+            <div class="alert alert-danger mb-0">@TempData["ToastError"]</div>
+        }
+        else if (TempData["Toast"] != null)
+        {
+            <div class="alert alert-success mb-0">@TempData["Toast"]</div>
+        }
     </div>
 
     <!-- Tabs -->
@@ -126,6 +134,10 @@
                 <div class="card-body">
                     <h4 class="card-title mb-3">Account Details</h4>
 
+                    <form method="post" asp-action="SaveSettings" asp-controller="Dashboard">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="modeInput" name="mode" value="none" />
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Name</label>
@@ -139,7 +151,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Email</label>
                             <div class="input-group">
-                                <input id="emailInput" class="form-control" value="@Model.Me.Email" readonly />
+                                <input id="emailInput" name="email" class="form-control" value="@Model.Me.Email" readonly />
                                 <button id="editEmailBtn" class="btn btn-outline-primary" type="button">Edit</button>
                             </div>
                         </div>
@@ -147,7 +159,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Phone</label>
                             <div class="input-group">
-                                <input id="phoneInput" class="form-control" value="@Model.Me.Phone" readonly />
+                                <input id="phoneInput" name="phone" class="form-control" value="@Model.Me.Phone" readonly />
                                 <button id="editPhoneBtn" class="btn btn-outline-primary" type="button">Edit</button>
                             </div>
                         </div>
@@ -158,19 +170,19 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Current Password</label>
-                            <input id="currentPwd" type="password" class="form-control" placeholder="Required to confirm changes" />
+                            <input id="currentPwd" name="currentPwd" type="password" class="form-control" placeholder="Required to confirm changes" />
                         </div>
 
                         <div class="col-md-6"></div>
 
                         <div class="col-md-6">
                             <label class="form-label">New Password</label>
-                            <input id="newPwd" type="password" class="form-control" disabled />
+                            <input id="newPwd" name="newPwd" type="password" class="form-control" disabled />
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Confirm Password</label>
-                            <input id="confirmPwd" type="password" class="form-control" disabled />
+                            <input id="confirmPwd" name="confirmPwd" type="password" class="form-control" disabled />
                         </div>
 
                         <div class="col-12 d-flex gap-2 mt-2">
@@ -180,7 +192,7 @@
 
                             <!-- You will wire these to your existing profile/password endpoints
                                  using your existing JS/AJAX pattern -->
-                            <button id="saveBtn" type="button" class="btn btn-primary" disabled>
+                            <button id="saveBtn" type="submit" class="btn btn-primary" disabled>
                                 Save
                             </button>
 
@@ -193,6 +205,7 @@
                             <div id="settingsMsg" class="small"></div>
                         </div>
                     </div>
+                    </form>
                 </div>
             </div>
 
@@ -211,12 +224,14 @@
                 const saveBtn = document.getElementById("saveBtn");
                 const cancelEditBtn = document.getElementById("cancelEditBtn");
 
+                const modeInput = document.getElementById("modeInput");
                 let mode = "none"; // none | email | phone | password
                 const originalEmail = emailInput.value;
                 const originalPhone = phoneInput.value;
 
                 function setMode(newMode) {
                     mode = newMode;
+                    modeInput.value = newMode;
 
                     // default lock everything
                     emailInput.readOnly = true;
@@ -264,14 +279,6 @@
                     newPwd.value = "";
                     confirmPwd.value = "";
                     setMode("none");
-                });
-
-                // Save click:
-                // NOTE: wire this to your existing JS/AJAX client that calls:
-                // - PATCH /api/auth/profile   { Email or Phone, CurrentPassword }
-                // - POST  /api/auth/change-password { CurrentPassword, NewPassword, ConfirmPassword }
-                saveBtn.addEventListener("click", async () => {
-                    alert("Wire Save logic to your existing API client here (profile/password endpoints).");
                 });
 
                 setMode("none");

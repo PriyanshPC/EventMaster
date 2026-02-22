@@ -65,6 +65,48 @@ public class DashboardController : Controller
         return View(vm);
     }
 
+
+    // POST: /Dashboard/SaveSettings
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveSettings(string mode, string? email, string? phone, string? currentPwd, string? newPwd, string? confirmPwd)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentPwd))
+                throw new InvalidOperationException("Current password is required.");
+
+            if (mode == "email")
+            {
+                await _dash.UpdateEmailAsync((email ?? "").Trim(), currentPwd);
+                TempData["Toast"] = "Email updated successfully.";
+            }
+            else if (mode == "phone")
+            {
+                await _dash.UpdatePhoneAsync((phone ?? "").Trim(), currentPwd);
+                TempData["Toast"] = "Phone updated successfully.";
+            }
+            else if (mode == "password")
+            {
+                if ((newPwd ?? "") != (confirmPwd ?? ""))
+                    throw new InvalidOperationException("New password and confirm password do not match.");
+
+                await _dash.ChangePasswordAsync(currentPwd, newPwd ?? "");
+                TempData["Toast"] = "Password changed successfully.";
+            }
+            else
+            {
+                throw new InvalidOperationException("Select one field to edit before saving.");
+            }
+        }
+        catch (Exception ex)
+        {
+            TempData["ToastError"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(User));
+    }
+
     // POST: /Dashboard/CancelRefund/5
     [HttpPost]
     [ValidateAntiForgeryToken]

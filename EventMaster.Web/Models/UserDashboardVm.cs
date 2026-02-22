@@ -74,3 +74,16 @@ public class PaymentSummaryDto
     public string Status { get; set; } = "";
     public string Card { get; set; } = ""; // one-line detail is enough
 }
+
+public class UpdateProfileRequest
+{
+    public string CurrentPassword { get; set; } = "";
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+}
+
+public class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; } = "";
+    public string NewPassword { get; set; } = "";
+}
