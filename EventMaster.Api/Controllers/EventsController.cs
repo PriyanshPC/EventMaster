@@ -18,12 +18,14 @@ public class EventsController : ControllerBase
     private readonly EventMasterDbContext _db;
     private readonly CurrentUser _me;
     private readonly IWebHostEnvironment _env;
+    private readonly ILogger<EventsController> _logger;
 
-    public EventsController(EventMasterDbContext db, CurrentUser me, IWebHostEnvironment env)
+    public EventsController(EventMasterDbContext db, CurrentUser me, IWebHostEnvironment env, ILogger<EventsController> logger)
     {
         _db = db;
         _me = me;
         _env = env;
+        _logger = logger;
     }
 
     // -----------------------------
@@ -273,14 +275,8 @@ public class EventsController : ControllerBase
             ? $"event_{eventId:D3}.png"   // 001 format
             : ev.image.Trim();
 
-        // Build path relative to wwwroot
-        var fullPath = Path.Combine(
-            _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
-            "images",
-            fileName
-        );
-
-        if (!System.IO.File.Exists(fullPath))
+        var fullPath = ResolveEventImagePathWithFallback(fileName);
+        if (fullPath is null)
             return NotFound("Image not found.");
 
         var contentType = GetContentType(Path.GetExtension(fullPath));
@@ -340,7 +336,7 @@ public class EventsController : ControllerBase
     }
 
     // POST api/events/{eventId}/image
-    // Upload or replace event image. Validates + resizes to 300x300 with padding. Saves as PNG under wwwroot/images/covers/event_01.png
+    // Upload or replace event image. Validates + resizes to 300x300 with padding. Saves as PNG under wwwroot/images/event_01.png
     [HttpPost("{eventId:int}/image")]
     [Authorize(Roles = "ORGANIZER")]
     [Consumes("multipart/form-data")]
@@ -361,14 +357,13 @@ public class EventsController : ControllerBase
         if (!allowedContentTypes.Contains((image.ContentType ?? "").ToLowerInvariant()))
             return BadRequest("Invalid image content type.");
 
-        // Build save path under wwwroot/images/covers
-        var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        var coversDir = Path.Combine(webRoot, "images", "covers");
-        Directory.CreateDirectory(coversDir);
+        // Build save path under canonical wwwroot/images
+        var imagesDir = GetCanonicalImagesDirectory();
+        Directory.CreateDirectory(imagesDir);
 
 
         var fileName = $"event_{eventId:D3}.png";
-        var finalPath = Path.Combine(coversDir, fileName);
+        var finalPath = Path.Combine(imagesDir, fileName);
         var tempPath = finalPath + ".tmp";
 
         // load + resize (300x300), preserve aspect ratio via padding
@@ -395,10 +390,35 @@ public class EventsController : ControllerBase
         {
             eventId,
             imageFileName = fileName,
-            staticUrl = $"/images/covers/{fileName}",
+            staticUrl = $"/images/{fileName}",
             savedTo = finalPath,
             webRoot = _env.WebRootPath
         });
+    }
+
+    private string GetCanonicalImagesDirectory()
+    {
+        var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        return Path.Combine(webRoot, "images");
+    }
+
+    private string? ResolveEventImagePathWithFallback(string fileName)
+    {
+        var canonicalPath = Path.Combine(GetCanonicalImagesDirectory(), fileName);
+        if (System.IO.File.Exists(canonicalPath))
+            return canonicalPath;
+
+        var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        var legacyCoversPath = Path.Combine(webRoot, "images", "covers", fileName);
+        if (System.IO.File.Exists(legacyCoversPath))
+        {
+            _logger.LogWarning(
+                "Event image {FileName} was not found in canonical /images directory. Falling back to legacy /images/covers path.",
+                fileName);
+            return legacyCoversPath;
+        }
+
+        return null;
     }
 
 
