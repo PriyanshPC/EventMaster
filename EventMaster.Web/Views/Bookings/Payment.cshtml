@@ -1,0 +1,47 @@
+@model EventMaster.Web.Models.PaymentPageViewModel
+@{
+    ViewData["Title"] = "Payment";
+}
+<div class="container my-4">
+    <div class="card mb-3"><div class="card-body">
+        <h1 class="h4">Payment</h1>
+        <div class="fw-semibold">@Model.Details.EventName</div>
+        <div class="text-muted">@Model.HeaderWhen • @Model.HeaderWhere</div>
+        <div class="mt-2">Tickets: @Model.Intent.Quantity | Seats: @(Model.Intent.Seats.Count == 0 ? "General" : string.Join(", ", Model.Intent.Seats)) | Total: <span class="fw-bold">$@Model.TotalAmount</span></div>
+    </div></div>
+
+    <form method="post" id="paymentForm" class="card"><div class="card-body row g-3">
+        @Html.AntiForgeryToken()
+        <div class="col-md-6"><label class="form-label">Name On Card</label><input class="form-control" asp-for="Input.NameOnCard" /></div>
+        <div class="col-md-6"><label class="form-label">Card Number</label><input class="form-control" asp-for="Input.CardNumber" /></div>
+        <div class="col-md-4"><label class="form-label">Exp (MM/YY)</label><input class="form-control" asp-for="Input.Exp" /></div>
+        <div class="col-md-4"><label class="form-label">CVV</label><input class="form-control" asp-for="Input.Cvv" /></div>
+        <div class="col-md-4"><label class="form-label">Postal Code</label><input class="form-control" asp-for="Input.PostalCode" /></div>
+        <div class="col-12"><label class="form-label">Discount Coupon</label><input class="form-control" asp-for="Input.DiscountCoupon" /></div>
+        <div class="col-12"><button class="btn btn-success" type="submit">Make a Payment</button></div>
+    </div></form>
+</div>
+
+<div id="paymentOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center bg-dark bg-opacity-50" style="z-index:2000;">
+    <div class="bg-white rounded p-4 text-center" style="min-width:280px;">
+        <div class="spinner-border text-primary mb-3"></div>
+        <div id="paymentStep" class="fw-semibold">Processing payment...</div>
+    </div>
+</div>
+
+<script>
+(() => {
+    const form = document.getElementById('paymentForm');
+    const overlay = document.getElementById('paymentOverlay');
+    const step = document.getElementById('paymentStep');
+    if (!form) return;
+    form.addEventListener('submit', () => {
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+        const steps = ['Contacting bank…', 'Validating info…', 'Authorizing payment…'];
+        const total = 2000 + Math.floor(Math.random() * 8000);
+        const each = Math.max(500, Math.floor(total / steps.length));
+        steps.forEach((text, i) => setTimeout(() => step.textContent = text, each * i));
+    });
+})();
+</script>
