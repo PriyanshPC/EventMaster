@@ -277,7 +277,6 @@ public class EventsController : ControllerBase
         var fullPath = Path.Combine(
             _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
             "images",
-            "covers",
             fileName
         );
 
@@ -327,7 +326,7 @@ public class EventsController : ControllerBase
         await _db.SaveChangesAsync();
 
         // Now we have event_id; set image filename rule: event_01.png
-        ev.image = $"event_{ev.event_id:D2}.png";
+        ev.image = $"event_{ev.event_id:D3}.png";
         await _db.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetOccurrenceDetails), new { eventId = ev.event_id, occurrenceId = 0 }, new
