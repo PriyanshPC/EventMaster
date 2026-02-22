@@ -33,7 +33,7 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Customer">Dashboard</a></li>
                         <li>
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="px-3 py-1">
+                            <form asp-controller="Account" asp-action="Login" method="post" class="px-3 py-1">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-link p-0 text-danger text-decoration-none">
                                     Logout
