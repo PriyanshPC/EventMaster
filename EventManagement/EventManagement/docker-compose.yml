@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  eventmaster-mysql:
+    image: mysql:8.0
+    container_name: eventmaster-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pw
+      MYSQL_DATABASE: eventmasterdb
+      MYSQL_USER: eventmaster
+      MYSQL_PASSWORD: eventmaster_pw
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+  api:
+    build: .
+    container_name: event-api
+    ports:
+      - "5180:5180"
+    environment:
+      ConnectionStrings__DefaultConnection: "server=eventmaster-mysql;port=3306;database=eventmasterdb;user=eventmaster;password=eventmaster_pw"
+    depends_on:
+      - eventmaster-mysql
+    restart: always
+
+volumes:
+  db_data:

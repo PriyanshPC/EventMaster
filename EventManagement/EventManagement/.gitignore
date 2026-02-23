@@ -1,0 +1,16 @@
+# Docker DB data (local only)
+db/data/
+
+# Env/secrets
+.env
+
+# Logs
+*.log
+
+# IDE configs
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
