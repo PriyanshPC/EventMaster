@@ -2,7 +2,7 @@
 using EventMaster.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventmMaster.Web.Controllers;
+namespace EventMaster.Web.Controllers;
 
 public class EventsController : Controller
 {
