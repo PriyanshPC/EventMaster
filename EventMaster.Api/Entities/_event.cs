@@ -14,7 +14,7 @@ public partial class _event
 
     public string? description { get; set; }
 
-    public string? image { get; set; }
+    public string image { get; set; } = "";
 
     public DateTime created_at { get; set; }
 
