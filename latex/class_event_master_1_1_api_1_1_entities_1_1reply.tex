@@ -1,0 +1,39 @@
+\doxysection{Event\+Master.\+Api.\+Entities.\+reply Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply}{}\label{class_event_master_1_1_api_1_1_entities_1_1reply}\index{EventMaster.Api.Entities.reply@{EventMaster.Api.Entities.reply}}
+
+
+Entity class representing the "{}reply"{} table in the database. This class is used by Entity Framework Core to map the "{}reply"{} table to a C\# class, allowing for querying and manipulating reply data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}reply"{} table, such as reply\+\_\+id, review\+\_\+id, organizer\+\_\+id, reply\+\_\+text, created\+\_\+at, and navigation properties for the related organizer (user) and review entities. This entity is an important part of the Events API as it allows organizers to respond to customer reviews, providing a way for organizers to engage with their customers and address any feedback or concerns raised in reviews.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_a974f64535377498c7c966d8f2b9a25ff}\label{class_event_master_1_1_api_1_1_entities_1_1reply_a974f64535377498c7c966d8f2b9a25ff} 
+int {\bfseries reply\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_ab34f7e7a4af281b59853b96036b03d11}\label{class_event_master_1_1_api_1_1_entities_1_1reply_ab34f7e7a4af281b59853b96036b03d11} 
+int {\bfseries review\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_a7f0f77495f67aa71f92d6492554e3e69}\label{class_event_master_1_1_api_1_1_entities_1_1reply_a7f0f77495f67aa71f92d6492554e3e69} 
+int {\bfseries organizer\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_aecd12347fce7c0afb9fd80f7bc17a32e}\label{class_event_master_1_1_api_1_1_entities_1_1reply_aecd12347fce7c0afb9fd80f7bc17a32e} 
+string {\bfseries reply\+\_\+text} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_a798b1e10ae3fa2481ba4cb6ccfbf4075}\label{class_event_master_1_1_api_1_1_entities_1_1reply_a798b1e10ae3fa2481ba4cb6ccfbf4075} 
+Date\+Time {\bfseries created\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_acb3406db3a734c5e5d8e126cf1b8c363}\label{class_event_master_1_1_api_1_1_entities_1_1reply_acb3406db3a734c5e5d8e126cf1b8c363} 
+virtual \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1user}{user}} {\bfseries organizer} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1reply_a8c9c9e5bcc0d38e0d752217696677678}\label{class_event_master_1_1_api_1_1_entities_1_1reply_a8c9c9e5bcc0d38e0d752217696677678} 
+virtual review {\bfseries review} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entity class representing the "{}reply"{} table in the database. This class is used by Entity Framework Core to map the "{}reply"{} table to a C\# class, allowing for querying and manipulating reply data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}reply"{} table, such as reply\+\_\+id, review\+\_\+id, organizer\+\_\+id, reply\+\_\+text, created\+\_\+at, and navigation properties for the related organizer (user) and review entities. This entity is an important part of the Events API as it allows organizers to respond to customer reviews, providing a way for organizers to engage with their customers and address any feedback or concerns raised in reviews. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Entities/reply.\+cs\end{DoxyCompactItemize}

@@ -1,7 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace EventMaster.Api.Security;
-
+/// <summary>
+/// Provides static methods for validating user input related to authentication, such as full name, phone number, email, and password strength.
+/// This class uses regular expressions to enforce specific formats and rules for each type of input, ensuring that data meets the expected criteria before being processed further in the authentication workflow.
+/// The validation rules are as follows:
+/// - Full Name: Must consist of exactly two words (first and last name) separated by
+/// a single space, with optional apostrophes or hyphens within each word (e.g., "O'Neil", "Anne-Marie").
+/// - Phone Number: Must be a 10-digit number starting with digits 2-9
+/// - Email: Must follow a standard email format
+/// </summary>
 public static class AuthValidation
 {
     // Exactly two words separated by a single space. No leading/trailing spaces.

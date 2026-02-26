@@ -1,0 +1,45 @@
+\doxysection{Event\+Master.\+Api.\+Entities.\+review Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_entities_1_1review}{}\label{class_event_master_1_1_api_1_1_entities_1_1review}\index{EventMaster.Api.Entities.review@{EventMaster.Api.Entities.review}}
+
+
+Entity class representing the "{}review"{} table in the database. This class is used by Entity Framework Core to map the "{}review"{} table to a C\# class, allowing for querying and manipulating review data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}review"{} table, such as review\+\_\+id, occurrence\+\_\+id, customer\+\_\+id, rating, comment, created\+\_\+at, and navigation properties for the related customer (user), occurrence (event occurrence), and replies (the replies to this review). This entity is an important part of the Events API as it allows customers to leave reviews for event occurrences they have attended, providing valuable feedback for organizers and other customers. Organizers can also respond to reviews through the reply entity, fostering engagement between organizers and customers.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_a1300aa5b49220eb50d8a69fe4b5be4a6}\label{class_event_master_1_1_api_1_1_entities_1_1review_a1300aa5b49220eb50d8a69fe4b5be4a6} 
+int {\bfseries review\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_a74854d63e9d2cb8b2d479286ec513bed}\label{class_event_master_1_1_api_1_1_entities_1_1review_a74854d63e9d2cb8b2d479286ec513bed} 
+int {\bfseries occurrence\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_a0a9563e1f845c8f3d36f850ab63a5c18}\label{class_event_master_1_1_api_1_1_entities_1_1review_a0a9563e1f845c8f3d36f850ab63a5c18} 
+int {\bfseries customer\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_adf75a30dd71fc20270ef3880a917fd78}\label{class_event_master_1_1_api_1_1_entities_1_1review_adf75a30dd71fc20270ef3880a917fd78} 
+int {\bfseries rating}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_ac85b98091f3ba94cdb9a2e6afb30b079}\label{class_event_master_1_1_api_1_1_entities_1_1review_ac85b98091f3ba94cdb9a2e6afb30b079} 
+string? {\bfseries comment}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_afb5edc0170dfb5d9b3a651eb964b04cb}\label{class_event_master_1_1_api_1_1_entities_1_1review_afb5edc0170dfb5d9b3a651eb964b04cb} 
+Date\+Time {\bfseries created\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_ac112d16a6ba377ecb84fe73089dce92c}\label{class_event_master_1_1_api_1_1_entities_1_1review_ac112d16a6ba377ecb84fe73089dce92c} 
+virtual \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1user}{user}} {\bfseries customer} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_a48239bc53867f446c07037f1f639a943}\label{class_event_master_1_1_api_1_1_entities_1_1review_a48239bc53867f446c07037f1f639a943} 
+virtual \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1event__occurrence}{event\+\_\+occurrence}} {\bfseries occurrence} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1review_a68b6f341dd8a94cf90bba1265e68ac66}\label{class_event_master_1_1_api_1_1_entities_1_1review_a68b6f341dd8a94cf90bba1265e68ac66} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1reply}{reply}} $>$ {\bfseries replies} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1reply}{reply}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entity class representing the "{}review"{} table in the database. This class is used by Entity Framework Core to map the "{}review"{} table to a C\# class, allowing for querying and manipulating review data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}review"{} table, such as review\+\_\+id, occurrence\+\_\+id, customer\+\_\+id, rating, comment, created\+\_\+at, and navigation properties for the related customer (user), occurrence (event occurrence), and replies (the replies to this review). This entity is an important part of the Events API as it allows customers to leave reviews for event occurrences they have attended, providing valuable feedback for organizers and other customers. Organizers can also respond to reviews through the reply entity, fostering engagement between organizers and customers. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Entities/review.\+cs\end{DoxyCompactItemize}

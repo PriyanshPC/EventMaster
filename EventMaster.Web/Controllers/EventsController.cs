@@ -3,7 +3,12 @@ using EventMaster.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventMaster.Web.Controllers;
-
+/// <summary>
+/// Handles displaying the list of events and event details. Integrates with the Events API to fetch event data, including occurrences, and the Reviews API to show user reviews on the event details page. Provides filtering options on the events list and ensures a rich display of event information (date/time formatting, location, pricing) for users to browse and select events to book.
+/// The Index action supports various query parameters for filtering (location, date, category, search)
+/// The Details action shows comprehensive information about a specific event occurrence, including user reviews and eligibility to add a review. It formats date/time for user-friendly display and constructs image URLs based on configuration settings.
+/// Both actions build view models that are passed to the corresponding Razor views for rendering the UI.
+/// </summary>
 public class EventsController : Controller
 {
     private readonly EventsApiClient _eventsApi;

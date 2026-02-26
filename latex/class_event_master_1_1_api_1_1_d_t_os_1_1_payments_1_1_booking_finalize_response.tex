@@ -1,0 +1,39 @@
+\doxysection{Event\+Master.\+Api.\+DTOs.\+Payments.\+Booking\+Finalize\+Response Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response}{}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response}\index{EventMaster.Api.DTOs.Payments.BookingFinalizeResponse@{EventMaster.Api.DTOs.Payments.BookingFinalizeResponse}}
+
+
+DTO for the response of finalizing a booking. It includes details about the booking such as the booking ID, occurrence ID, quantity of tickets, occupied seats, ticket number, total amount, and the associated payment information. This is used to provide comprehensive feedback to the client about the finalized booking and its payment status after a successful transaction.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a242eb0e455e60b304f2d4e1835e14a40}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a242eb0e455e60b304f2d4e1835e14a40} 
+int {\bfseries Booking\+Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a3dbe1e8358b39372dbf0315c08154cc5}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a3dbe1e8358b39372dbf0315c08154cc5} 
+int {\bfseries Occurrence\+Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a510c630a1bf3296fe64612294e5de323}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a510c630a1bf3296fe64612294e5de323} 
+int {\bfseries Quantity}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a39b8796681e78ea990db8c480f200dba}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a39b8796681e78ea990db8c480f200dba} 
+string? {\bfseries Seats\+Occupied}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a08cfb20677bee88782e59f0cbb468274}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a08cfb20677bee88782e59f0cbb468274} 
+string {\bfseries Ticket\+Number} = "{}"{}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a95638ddba16ce9398c2f04a59da121d8}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_a95638ddba16ce9398c2f04a59da121d8} 
+decimal {\bfseries Total\+Amount}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_aede7a11a2d196ee95a77386d88fc0115}\label{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response_aede7a11a2d196ee95a77386d88fc0115} 
+\mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_response}{Payment\+Response}} {\bfseries Payment} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+DTO for the response of finalizing a booking. It includes details about the booking such as the booking ID, occurrence ID, quantity of tickets, occupied seats, ticket number, total amount, and the associated payment information. This is used to provide comprehensive feedback to the client about the finalized booking and its payment status after a successful transaction. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+DTOs/\+Payments/Payment\+Response.\+cs\end{DoxyCompactItemize}

@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace EventMaster.Web.Controllers;
-
+/// <summary>
+/// Handles user authentication (login, registration, logout) and session management using cookies.
+/// Integrates with the Auth API to validate credentials and retrieve user info, then creates an authenticated session with claims for authorization. Also ensures safe redirection after login/registration.
+/// </summary>
 public class AccountController : Controller
 {
     private readonly AuthApiClient _authApi;

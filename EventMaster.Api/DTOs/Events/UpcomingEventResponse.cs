@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Events;
-
+/// <summary>
+/// Response model for retrieving a list of upcoming events, including basic event details and a summary of their occurrences. This model is used in endpoints that return a list of events with their upcoming occurrences, providing enough information for users to see what's coming up without overwhelming them with details. Each event includes a list of its occurrences, which contain summary information about the date, time, venue, price, and availability.
+/// </summary>
 public class UpcomingEventResponse
 {
     public int EventId { get; set; }

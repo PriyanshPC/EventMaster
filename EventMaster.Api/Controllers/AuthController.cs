@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventMaster.Api.Controllers;
 
+/// <summary>
+/// Authentication and user profile management controller.
+/// </summary>
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
@@ -32,6 +35,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest req)
     {
+        /// Basic input trimming and validation.
         req.Name = (req.Name ?? "").Trim();
         req.Email = (req.Email ?? "").Trim();
         req.Username = (req.Username ?? "").Trim();
@@ -101,6 +105,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
     {
+        /// Allow login with either username or email (trimmed). This is a common pattern and users often forget which one they registered with.
         var key = (req.UsernameOrEmail ?? "").Trim();
         var u = await _db.users.FirstOrDefaultAsync(x => x.username == key || x.email == key);
 

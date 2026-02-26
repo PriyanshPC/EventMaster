@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Reviews;
-
+/// <summary>
+/// DTO for representing a review in responses.
+/// </summary>
 public class ReviewResponse
 {
     public int ReviewId { get; set; }

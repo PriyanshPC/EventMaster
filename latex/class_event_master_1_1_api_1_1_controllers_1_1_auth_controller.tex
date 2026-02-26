@@ -1,0 +1,60 @@
+\doxysection{Event\+Master.\+Api.\+Controllers.\+Auth\+Controller Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller}{}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller}\index{EventMaster.Api.Controllers.AuthController@{EventMaster.Api.Controllers.AuthController}}
+
+
+Authentication and user profile management controller.  
+
+
+Inheritance diagram for Event\+Master.\+Api.\+Controllers.\+Auth\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_af10700b66c397d4d25f92696656e72c3}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_af10700b66c397d4d25f92696656e72c3} 
+{\bfseries Auth\+Controller} (\mbox{\hyperlink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context}} db, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_password_hasher}{Password\+Hasher}} hasher, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service}{Jwt\+Token\+Service}} jwt, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_current_user}{Current\+User}} me)
+\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_auth_response}{Auth\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a191acadde0c04e2c05bd8a49c2bc2f63}{Register}} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_register_request}{Register\+Request}} req)
+\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_auth_response}{Auth\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_aa58a2bb18dc05062a76e7e63f6be3187}{Login}} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_login_request}{Login\+Request}} req)
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a16aadbba30a556452229fc661ff45a4b}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a16aadbba30a556452229fc661ff45a4b} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_me_response}{Me\+Response}} $>$ $>$ {\bfseries Me} ()
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a8dac142b81504246a4a989652a159cc1}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a8dac142b81504246a4a989652a159cc1} 
+async Task$<$ IAction\+Result $>$ {\bfseries Update\+Profile} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_update_profile_request}{Update\+Profile\+Request}} req)
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_aab70c6e111558c31620e3db58e414869}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_aab70c6e111558c31620e3db58e414869} 
+async Task$<$ IAction\+Result $>$ {\bfseries Change\+Password} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_change_password_request}{Change\+Password\+Request}} req)
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a19b58e01b5a1feb87bc296f38dd5a2fe}\label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a19b58e01b5a1feb87bc296f38dd5a2fe} 
+async Task$<$ IAction\+Result $>$ {\bfseries Deactivate\+Account} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Authentication and user profile management controller. 
+
+\label{doc-func-members}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_aa58a2bb18dc05062a76e7e63f6be3187}\index{EventMaster.Api.Controllers.AuthController@{EventMaster.Api.Controllers.AuthController}!Login@{Login}}
+\index{Login@{Login}!EventMaster.Api.Controllers.AuthController@{EventMaster.Api.Controllers.AuthController}}
+\doxysubsubsection{\texorpdfstring{Login()}{Login()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_aa58a2bb18dc05062a76e7e63f6be3187} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_auth_response}{Auth\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Auth\+Controller.\+Login (\begin{DoxyParamCaption}\item[{\mbox{[}\+From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_login_request}{Login\+Request}}}]{req}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Allow login with either username or email (trimmed). This is a common pattern and users often forget which one they registered with.\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a191acadde0c04e2c05bd8a49c2bc2f63}\index{EventMaster.Api.Controllers.AuthController@{EventMaster.Api.Controllers.AuthController}!Register@{Register}}
+\index{Register@{Register}!EventMaster.Api.Controllers.AuthController@{EventMaster.Api.Controllers.AuthController}}
+\doxysubsubsection{\texorpdfstring{Register()}{Register()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_auth_controller_a191acadde0c04e2c05bd8a49c2bc2f63} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_auth_response}{Auth\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Auth\+Controller.\+Register (\begin{DoxyParamCaption}\item[{\mbox{[}\+From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_auth_1_1_register_request}{Register\+Request}}}]{req}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Basic input trimming and validation.
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Controllers/Auth\+Controller.\+cs\end{DoxyCompactItemize}

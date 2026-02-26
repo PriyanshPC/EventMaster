@@ -1,0 +1,51 @@
+\doxysection{Event\+Master.\+Api.\+Entities.\+venue Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue}{}\label{class_event_master_1_1_api_1_1_entities_1_1venue}\index{EventMaster.Api.Entities.venue@{EventMaster.Api.Entities.venue}}
+
+
+Entity class representing the "{}venue"{} table in the database. This class is used by Entity Framework Core to map the "{}venue"{} table to a C\# class, allowing for querying and manipulating venue data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}venue"{} table, such as venue\+\_\+id, name, address, city, province, postal\+\_\+code, capacity, seating, created\+\_\+at, and updated\+\_\+at. It also defines a navigation property for related entities, such as event\+\_\+occurrences (the event occurrences that take place at this venue). This entity is an important part of the Events API as it allows organizers to manage venues for their events and provides customers with information about where events are taking place.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_aaed90ab44d862c06d4b2412ac3476b4b}\label{class_event_master_1_1_api_1_1_entities_1_1venue_aaed90ab44d862c06d4b2412ac3476b4b} 
+int {\bfseries venue\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a503148acab7fe909c06842b0ee38c436}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a503148acab7fe909c06842b0ee38c436} 
+string {\bfseries name} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_ab7c1baa27399594f54c5a9d685dda94f}\label{class_event_master_1_1_api_1_1_entities_1_1venue_ab7c1baa27399594f54c5a9d685dda94f} 
+string {\bfseries address} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_aaa571e1b27ca328914bdfac5d2176ff1}\label{class_event_master_1_1_api_1_1_entities_1_1venue_aaa571e1b27ca328914bdfac5d2176ff1} 
+string {\bfseries city} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a0307a8333ac02d59903790c7f623d156}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a0307a8333ac02d59903790c7f623d156} 
+string {\bfseries province} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a4ee1caab09c944f3156f11f93f547cbd}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a4ee1caab09c944f3156f11f93f547cbd} 
+string {\bfseries postal\+\_\+code} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a9393ae351e172750e28dd1567daf144c}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a9393ae351e172750e28dd1567daf144c} 
+int {\bfseries capacity}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_ade3f9a15e798a69ed51ff382d647a257}\label{class_event_master_1_1_api_1_1_entities_1_1venue_ade3f9a15e798a69ed51ff382d647a257} 
+bool {\bfseries seating}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a34fcbdde1ffab058d0a6ec57f20f35da}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a34fcbdde1ffab058d0a6ec57f20f35da} 
+Date\+Time {\bfseries created\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a042e5dba11e008ddf1a85f7c04e4cfb1}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a042e5dba11e008ddf1a85f7c04e4cfb1} 
+Date\+Time {\bfseries updated\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1venue_a288defc51ec04c19994ffb1f7d0b8be4}\label{class_event_master_1_1_api_1_1_entities_1_1venue_a288defc51ec04c19994ffb1f7d0b8be4} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1event__occurrence}{event\+\_\+occurrence}} $>$ {\bfseries event\+\_\+occurrences} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1event__occurrence}{event\+\_\+occurrence}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entity class representing the "{}venue"{} table in the database. This class is used by Entity Framework Core to map the "{}venue"{} table to a C\# class, allowing for querying and manipulating venue data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}venue"{} table, such as venue\+\_\+id, name, address, city, province, postal\+\_\+code, capacity, seating, created\+\_\+at, and updated\+\_\+at. It also defines a navigation property for related entities, such as event\+\_\+occurrences (the event occurrences that take place at this venue). This entity is an important part of the Events API as it allows organizers to manage venues for their events and provides customers with information about where events are taking place. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Entities/venue.\+cs\end{DoxyCompactItemize}

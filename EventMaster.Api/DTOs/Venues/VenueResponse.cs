@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Venues;
-
+/// <summary>
+/// Represents the response object for a venue, containing details about the venue such as its name, address, capacity, and seating arrangement.
+/// </summary>
 public class VenueResponse
 {
     public int VenueId { get; set; }

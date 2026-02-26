@@ -1,0 +1,39 @@
+\doxysection{Event\+Master.\+Web.\+Models.\+Organizer\+Occurrence\+Details\+View\+Model Class Reference}
+\hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model}{}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model}\index{EventMaster.Web.Models.OrganizerOccurrenceDetailsViewModel@{EventMaster.Web.Models.OrganizerOccurrenceDetailsViewModel}}
+
+
+View\+Model for the organizer occurrence details page, which shows detailed information about a specific event occurrence from the organizer\textquotesingle{}s perspective, including event description, date/time, venue, and options to cancel the occurrence if eligible. Contains properties for all the relevant information needed to display the occurrence details and control the UI elements on the page (e.\+g. whether to show the "{}\+Cancel Occurrence"{} button). This View\+Model is populated by calling the Events API to fetch the event occurrence details for a given occurrence ID, and it is used to render the organizer occurrence details page with all the necessary information and controls for managing the occurrence.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_aa6eb34141932378a5b93530c34c61845}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_aa6eb34141932378a5b93530c34c61845} 
+int {\bfseries Event\+Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a8b8b891806befefa940b2b871e7b7d8e}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a8b8b891806befefa940b2b871e7b7d8e} 
+int {\bfseries Occurrence\+Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a748357f69378d129d567aacca0f2acca}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a748357f69378d129d567aacca0f2acca} 
+\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_event_occurrence_details_response}{Event\+Occurrence\+Details\+Response}} {\bfseries Details} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_aee1b051df2856fe4d47785a909234384}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_aee1b051df2856fe4d47785a909234384} 
+string {\bfseries Header\+When} = "{}"{}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a56073592ed9ead9774e5689b913814fa}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a56073592ed9ead9774e5689b913814fa} 
+string {\bfseries Header\+Where} = "{}"{}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a2602a7d3f21d6bb7305ba6b922916338}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a2602a7d3f21d6bb7305ba6b922916338} 
+string {\bfseries Image\+Url} = "{}"{}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a26bb972975ecda1b7bbc0c85218c263b}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_occurrence_details_view_model_a26bb972975ecda1b7bbc0c85218c263b} 
+bool {\bfseries Can\+Cancel}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+View\+Model for the organizer occurrence details page, which shows detailed information about a specific event occurrence from the organizer\textquotesingle{}s perspective, including event description, date/time, venue, and options to cancel the occurrence if eligible. Contains properties for all the relevant information needed to display the occurrence details and control the UI elements on the page (e.\+g. whether to show the "{}\+Cancel Occurrence"{} button). This View\+Model is populated by calling the Events API to fetch the event occurrence details for a given occurrence ID, and it is used to render the organizer occurrence details page with all the necessary information and controls for managing the occurrence. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Web/\+Models/Organizer\+Occurrence\+Details\+View\+Model.\+cs\end{DoxyCompactItemize}

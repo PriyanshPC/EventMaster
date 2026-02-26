@@ -1,0 +1,67 @@
+\doxysection{Event\+Master.\+Api.\+Controllers.\+Venues\+Controller Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller}{}\label{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller}\index{EventMaster.Api.Controllers.VenuesController@{EventMaster.Api.Controllers.VenuesController}}
+
+
+Controller for managing venues. This includes endpoints to retrieve a list of all venues and to get details of a specific venue by its ID. Both endpoints are public and do not require authentication, allowing anyone to view venue information. The controller uses the \doxylink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context} to access the venues data from the database and returns the relevant information in the response. This allows users to browse available venues when planning events.  
+
+
+Inheritance diagram for Event\+Master.\+Api.\+Controllers.\+Venues\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a095de605147ce9ae39cd4f15b4dfed9e}\label{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a095de605147ce9ae39cd4f15b4dfed9e} 
+{\bfseries Venues\+Controller} (\mbox{\hyperlink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context}} db, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_password_hasher}{Password\+Hasher}} hasher, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service}{Jwt\+Token\+Service}} jwt, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_current_user}{Current\+User}} me)
+\item 
+async Task$<$ IAction\+Result $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a05babc824d0b2635b3e9c8e1734dd94c}{Get\+Venues}} ()
+\begin{DoxyCompactList}\small\item\em GET /api/venues Retrieves a list of all venues with their basic details. This endpoint is public and does not require authentication, allowing anyone to view the available venues. The response includes an array of venues, each containing its ID, name, address, city, province, postal code, capacity, and seating arrangement. This allows users to browse through the venues when planning their events and helps them make informed decisions about where to host their events. \end{DoxyCompactList}\item 
+async Task$<$ IAction\+Result $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a244e54dff25ebf096fe0851587d4a94a}{Get\+Venue}} (int id)
+\begin{DoxyCompactList}\small\item\em GET /api/venues/\{id\} Retrieves the details of a specific venue by its ID. This endpoint is public and does not require authentication, allowing anyone to view the information of a venue. The response includes all relevant details about the venue, such as its name, address, city, province, postal code, capacity, and seating arrangement. If the venue with the specified ID does not exist, it returns a 404 error. This allows users to get detailed information about a specific venue when planning their events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Controller for managing venues. This includes endpoints to retrieve a list of all venues and to get details of a specific venue by its ID. Both endpoints are public and do not require authentication, allowing anyone to view venue information. The controller uses the \doxylink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context} to access the venues data from the database and returns the relevant information in the response. This allows users to browse available venues when planning events. 
+
+\label{doc-func-members}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a244e54dff25ebf096fe0851587d4a94a}\index{EventMaster.Api.Controllers.VenuesController@{EventMaster.Api.Controllers.VenuesController}!GetVenue@{GetVenue}}
+\index{GetVenue@{GetVenue}!EventMaster.Api.Controllers.VenuesController@{EventMaster.Api.Controllers.VenuesController}}
+\doxysubsubsection{\texorpdfstring{GetVenue()}{GetVenue()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a244e54dff25ebf096fe0851587d4a94a} 
+async Task$<$ IAction\+Result $>$ Event\+Master.\+Api.\+Controllers.\+Venues\+Controller.\+Get\+Venue (\begin{DoxyParamCaption}\item[{int}]{id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+GET /api/venues/\{id\} Retrieves the details of a specific venue by its ID. This endpoint is public and does not require authentication, allowing anyone to view the information of a venue. The response includes all relevant details about the venue, such as its name, address, city, province, postal code, capacity, and seating arrangement. If the venue with the specified ID does not exist, it returns a 404 error. This allows users to get detailed information about a specific venue when planning their events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a05babc824d0b2635b3e9c8e1734dd94c}\index{EventMaster.Api.Controllers.VenuesController@{EventMaster.Api.Controllers.VenuesController}!GetVenues@{GetVenues}}
+\index{GetVenues@{GetVenues}!EventMaster.Api.Controllers.VenuesController@{EventMaster.Api.Controllers.VenuesController}}
+\doxysubsubsection{\texorpdfstring{GetVenues()}{GetVenues()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_venues_controller_a05babc824d0b2635b3e9c8e1734dd94c} 
+async Task$<$ IAction\+Result $>$ Event\+Master.\+Api.\+Controllers.\+Venues\+Controller.\+Get\+Venues (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+GET /api/venues Retrieves a list of all venues with their basic details. This endpoint is public and does not require authentication, allowing anyone to view the available venues. The response includes an array of venues, each containing its ID, name, address, city, province, postal code, capacity, and seating arrangement. This allows users to browse through the venues when planning their events and helps them make informed decisions about where to host their events. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Controllers/Venue\+Controller.\+cs\end{DoxyCompactItemize}

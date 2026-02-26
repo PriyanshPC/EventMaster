@@ -1,7 +1,9 @@
 ﻿using EventMaster.Web.Services.ApiDtos;
 
 namespace EventMaster.Web.Models;
-
+/// <summary>
+///  ViewModel for the event details page, which shows detailed information about a specific event occurrence, including event description, date/time, venue, reviews, and options to book or add a review if eligible. Contains properties for all the relevant information needed to display the event details and control the UI elements on the page (e.g. whether to show the "Add Review" button). This ViewModel is populated by calling the Events API to fetch the event occurrence details and the Reviews API to fetch existing reviews and check review eligibility for the current user.
+/// </summary>
 public class EventDetailsViewModel
 {
     public int EventId { get; set; }

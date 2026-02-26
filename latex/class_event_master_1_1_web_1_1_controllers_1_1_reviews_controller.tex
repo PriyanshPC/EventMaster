@@ -1,0 +1,33 @@
+\doxysection{Event\+Master.\+Web.\+Controllers.\+Reviews\+Controller Class Reference}
+\hypertarget{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller}{}\label{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller}\index{EventMaster.Web.Controllers.ReviewsController@{EventMaster.Web.Controllers.ReviewsController}}
+
+
+Handles user reviews for events, including displaying the review submission form and processing review submissions. Integr ates with the Reviews API to check eligibility for submitting a review (only customers who have attended a completed occurrence can review) and to submit new reviews. Also retrieves existing reviews for display on the review submission page. The Create GET action checks if the user is eligible to submit a review for the specified event occurrence, and if so, retrieves the occurrence details and existing reviews to build a view model for the review submission page. If the user is not eligible, they are redirected back to the event details page with a notification. The Create POST action validates the user\textquotesingle{}s eligibility again, then submits the review to the Reviews API using the JWT from the user\textquotesingle{}s claims for authentication. It provides feedback on the success or failure of the review submission and redirects appropriately. The Set\+Notification method is a helper to set Temp\+Data for displaying notifications to the user. This controller ensures that only authorized customers can submit reviews and that they can only review events they have attended, maintaining the integrity of the review system. It also provides a seamless user experience by integrating with the Events API to show relevant event information on the review page.  
+
+
+Inheritance diagram for Event\+Master.\+Web.\+Controllers.\+Reviews\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_ac3468adbe565ec7db99ec3fb3cb35814}\label{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_ac3468adbe565ec7db99ec3fb3cb35814} 
+{\bfseries Reviews\+Controller} (\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_events_api_client}{Events\+Api\+Client}} events\+Api, \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_reviews_api_client}{Reviews\+Api\+Client}} reviews\+Api, IConfiguration config)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_a263843d5a23b2a20e83a16ff81b985cf}\label{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_a263843d5a23b2a20e83a16ff81b985cf} 
+async Task$<$ IAction\+Result $>$ {\bfseries Create} (int event\+Id, int occurrence\+Id)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_ac49802e4d7b92bc07ecdba356469e9bb}\label{class_event_master_1_1_web_1_1_controllers_1_1_reviews_controller_ac49802e4d7b92bc07ecdba356469e9bb} 
+async Task$<$ IAction\+Result $>$ {\bfseries Create} (int event\+Id, int occurrence\+Id, \mbox{\hyperlink{class_event_master_1_1_web_1_1_models_1_1_review_form_input}{Review\+Form\+Input}} input)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles user reviews for events, including displaying the review submission form and processing review submissions. Integr ates with the Reviews API to check eligibility for submitting a review (only customers who have attended a completed occurrence can review) and to submit new reviews. Also retrieves existing reviews for display on the review submission page. The Create GET action checks if the user is eligible to submit a review for the specified event occurrence, and if so, retrieves the occurrence details and existing reviews to build a view model for the review submission page. If the user is not eligible, they are redirected back to the event details page with a notification. The Create POST action validates the user\textquotesingle{}s eligibility again, then submits the review to the Reviews API using the JWT from the user\textquotesingle{}s claims for authentication. It provides feedback on the success or failure of the review submission and redirects appropriately. The Set\+Notification method is a helper to set Temp\+Data for displaying notifications to the user. This controller ensures that only authorized customers can submit reviews and that they can only review events they have attended, maintaining the integrity of the review system. It also provides a seamless user experience by integrating with the Events API to show relevant event information on the review page. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Web/\+Controllers/Reviews\+Controller.\+cs\end{DoxyCompactItemize}

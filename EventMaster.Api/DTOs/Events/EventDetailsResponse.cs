@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Events;
-
+/// <summary>
+/// Response model for retrieving detailed information about a specific event occurrence, including event details, venue information, and organizer information.
+/// </summary>
 public class EventOccurrenceDetailsResponse
 {
     public int OccurrenceId { get; set; }

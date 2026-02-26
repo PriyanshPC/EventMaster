@@ -1,0 +1,57 @@
+\doxysection{Event\+Master.\+Api.\+Entities.\+booking Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking}{}\label{class_event_master_1_1_api_1_1_entities_1_1booking}\index{EventMaster.Api.Entities.booking@{EventMaster.Api.Entities.booking}}
+
+
+Entity class representing the "{}booking"{} table in the database. This class is used by Entity Framework Core to map the "{}booking"{} table to a C\# class, allowing for querying and manipulating booking data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}booking"{} table, such as booking\+\_\+id, occurrence\+\_\+id, customer\+\_\+id, quantity, seats\+\_\+occupied, status, total\+\_\+amount, ticket\+\_\+number, created\+\_\+at, and updated\+\_\+at. It also defines navigation properties for related entities, such as customer (the user who made the booking), occurrence (the event occurrence that was booked), and payments (the payments associated with this booking). This entity is an important part of the Events API and is used in various operations such as creating bookings, retrieving booking details, updating bookings, and managing payments for bookings.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a356b4ed5c39d41de9fa2d863bd5ea382}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a356b4ed5c39d41de9fa2d863bd5ea382} 
+int {\bfseries booking\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a9f16f8683555a470fd63e9a40146100d}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a9f16f8683555a470fd63e9a40146100d} 
+int {\bfseries occurrence\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a5211707c98e90cd732f62931e9775085}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a5211707c98e90cd732f62931e9775085} 
+int {\bfseries customer\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a17499efbc03d10314dd9839d47aa332b}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a17499efbc03d10314dd9839d47aa332b} 
+int {\bfseries quantity}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_abc5d7923f879733f80858c792003d764}\label{class_event_master_1_1_api_1_1_entities_1_1booking_abc5d7923f879733f80858c792003d764} 
+string? {\bfseries seats\+\_\+occupied}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a0bc2271d8de1b60aa314469e89608124}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a0bc2271d8de1b60aa314469e89608124} 
+string {\bfseries status} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a68cb7f8befacf4eb7df89b6e12aa8489}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a68cb7f8befacf4eb7df89b6e12aa8489} 
+decimal {\bfseries total\+\_\+amount}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a3b95b900f223598ac2b48a029dfdaa39}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a3b95b900f223598ac2b48a029dfdaa39} 
+string {\bfseries ticket\+\_\+number} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a35a04e0e7190c1826c756371cfa02f4b}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a35a04e0e7190c1826c756371cfa02f4b} 
+Date\+Time {\bfseries created\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a1dd1c09e3e91041a155cbca976ac386a}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a1dd1c09e3e91041a155cbca976ac386a} 
+Date\+Time {\bfseries updated\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a6d44a0aabb6337dd002b840cb5621228}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a6d44a0aabb6337dd002b840cb5621228} 
+virtual \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1user}{user}} {\bfseries customer} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_a981028a7a02b009cc4b61414365b1327}\label{class_event_master_1_1_api_1_1_entities_1_1booking_a981028a7a02b009cc4b61414365b1327} 
+virtual \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1event__occurrence}{event\+\_\+occurrence}} {\bfseries occurrence} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1booking_afeef54f433806d9612e24ee23717eeb4}\label{class_event_master_1_1_api_1_1_entities_1_1booking_afeef54f433806d9612e24ee23717eeb4} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1payment}{payment}} $>$ {\bfseries payments} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1payment}{payment}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entity class representing the "{}booking"{} table in the database. This class is used by Entity Framework Core to map the "{}booking"{} table to a C\# class, allowing for querying and manipulating booking data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}booking"{} table, such as booking\+\_\+id, occurrence\+\_\+id, customer\+\_\+id, quantity, seats\+\_\+occupied, status, total\+\_\+amount, ticket\+\_\+number, created\+\_\+at, and updated\+\_\+at. It also defines navigation properties for related entities, such as customer (the user who made the booking), occurrence (the event occurrence that was booked), and payments (the payments associated with this booking). This entity is an important part of the Events API and is used in various operations such as creating bookings, retrieving booking details, updating bookings, and managing payments for bookings. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Entities/booking.\+cs\end{DoxyCompactItemize}

@@ -6,7 +6,9 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 
 namespace EventMaster.Web.Services;
-
+/// <summary>
+/// Client for calling review-related API endpoints, such as fetching reviews for an event, checking review eligibility, submitting new reviews, and submitting organizer replies to reviews.
+/// </summary>
 public class ReviewsApiClient
 {
     private readonly HttpClient _http;

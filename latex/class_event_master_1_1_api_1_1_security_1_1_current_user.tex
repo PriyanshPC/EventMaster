@@ -1,0 +1,48 @@
+\doxysection{Event\+Master.\+Api.\+Security.\+Current\+User Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user}{}\label{class_event_master_1_1_api_1_1_security_1_1_current_user}\index{EventMaster.Api.Security.CurrentUser@{EventMaster.Api.Security.CurrentUser}}
+
+
+Represents the currently authenticated user in the application, providing properties to access user information such as authentication status, user ID, role, username, and email. This class relies on the IHttp\+Context\+Accessor to access the current HTTP context and extract user claims to populate its properties. It provides a convenient way to access user information throughout the application without needing to directly interact with the HTTP context in multiple places, promoting cleaner and more maintainable code. The properties include\+:  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_aeaac3a9ef3f1f1286ead6534ffc16743}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_aeaac3a9ef3f1f1286ead6534ffc16743} 
+{\bfseries Current\+User} (IHttp\+Context\+Accessor http)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_add2d496af6cc60a838da30e314a7fbc0}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_add2d496af6cc60a838da30e314a7fbc0} 
+bool {\bfseries Is\+Authenticated}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_aed7bb0f4e1a3db7548db96f883995119}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_aed7bb0f4e1a3db7548db96f883995119} 
+int {\bfseries User\+Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_a8a04541e8e8c4d297d96c1fcb9482dc6}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_a8a04541e8e8c4d297d96c1fcb9482dc6} 
+string? {\bfseries Role}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_a63d2e531fe3086f1ec331ad44f95dd48}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_a63d2e531fe3086f1ec331ad44f95dd48} 
+string? {\bfseries Username}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_current_user_a37cbb6ab718cb5b2bba3a3376af97d49}\label{class_event_master_1_1_api_1_1_security_1_1_current_user_a37cbb6ab718cb5b2bba3a3376af97d49} 
+string? {\bfseries Email}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents the currently authenticated user in the application, providing properties to access user information such as authentication status, user ID, role, username, and email. This class relies on the IHttp\+Context\+Accessor to access the current HTTP context and extract user claims to populate its properties. It provides a convenient way to access user information throughout the application without needing to directly interact with the HTTP context in multiple places, promoting cleaner and more maintainable code. The properties include\+: 
+
+
+\begin{DoxyItemize}
+\item Is\+Authenticated\+: Indicates whether the user is authenticated.
+\item User\+Id\+: Retrieves the user\textquotesingle{}s ID from the claims, returning 0 if the claim is missing or cannot be parsed as an integer.
+\item Role\+: Retrieves the user\textquotesingle{}s role from the claims, returning null if the claim is missing.
+\item Username\+: Retrieves the user\textquotesingle{}s username from the claims, returning null if the claim is missing.
+\item Email\+: Retrieves the user\textquotesingle{}s email from the claims, returning null if the claim is missing. This class is typically used in scenarios where you need to access the current user\textquotesingle{}s information in services, controllers, or other parts of the application without directly coupling those components to the HTTP context, allowing for better separation of concerns and easier testing. 
+\end{DoxyItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Security/Current\+User.\+cs\end{DoxyCompactItemize}

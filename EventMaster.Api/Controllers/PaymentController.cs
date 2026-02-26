@@ -13,6 +13,10 @@ namespace EventMaster.Api.Controllers;
 [ApiController]
 [Route("api/payment")]
 [Authorize]
+/// <summary>
+/// Controller for handling payments and booking finalization. This includes validating coupons, processing payments through the
+/// payment emulator, and creating bookings in a concurrency-safe manner to prevent overselling. All endpoints require authentication since they involve sensitive payment and booking information.
+/// </summary>
 public class PaymentsController : ControllerBase
 {
     private readonly EventMasterDbContext _db;
@@ -23,7 +27,11 @@ public class PaymentsController : ControllerBase
         _db = db;
         _store = store;
     }
-
+/// <summary>
+/// Get payment details by booking ID. Only the customer who owns the booking can access this information. Returns 404 if booking or payment not found, 403 if user tries to access someone else's booking.
+/// </summary>
+/// <param name="bookingId"></param>
+/// <returns></returns>
     [HttpGet("booking/{bookingId:int}")]
     public async Task<ActionResult<PaymentResponse>> GetByBookingId(int bookingId)
     {
@@ -39,7 +47,11 @@ public class PaymentsController : ControllerBase
 
         return Ok(ToResponse(payment));
     }
-
+    /// <summary>
+    /// Validate a coupon code against the payment emulator's list of coupons. Checks if the coupon exists, is active, not expired, and meets minimum amount requirements. Returns whether the coupon is valid, any applicable discount, and the final amount after discount. This endpoint can be used by the frontend to provide real-time feedback to users when they enter a coupon code during checkout. It does not require authentication since we want to allow users to check coupons before they log in or create an account. However, it could be rate-limited to prevent abuse (e.g. brute-forcing coupon codes).
+    /// </summary>
+    /// <param name="req"></param>
+    /// <returns></returns>
     [HttpPost("validate-coupon")]
     public async Task<ActionResult<CouponValidateResponse>> ValidateCoupon([FromBody] CouponValidateRequest req)
     {
@@ -56,7 +68,11 @@ public class PaymentsController : ControllerBase
             FinalAmount = final
         });
     }
-
+/// <summary>
+/// Finalize a booking by processing payment and creating a booking record in the database. This endpoint performs several critical functions in a single transaction to ensure data integrity and prevent overselling:
+/// </summary>
+/// <param name="req"></param>
+/// <returns></returns>
     // Finalize booking + payment in one transaction to prevent overselling / seat races
     [HttpPost("finalize-booking")]
     public async Task<ActionResult<BookingFinalizeResponse>> FinalizeBooking([FromBody] PaymentCreateRequest req)
@@ -186,6 +202,12 @@ public class PaymentsController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Helper method to validate and apply a coupon code. Checks if the coupon exists, is active, not expired, and meets minimum amount requirements. Calculates the discount based on the coupon type (percent or fixed) and returns the final amount after applying the discount. This method is used by both the coupon validation endpoint and the booking finalization endpoint to ensure consistent coupon logic across the application.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
     private async Task<(bool ok, string message, decimal discount, decimal final)> TryApplyCoupon(string code, decimal amount)
     {
         var data = await _store.ReadAsync();
@@ -208,6 +230,11 @@ public class PaymentsController : ControllerBase
         return (true, "Coupon applied.", discount, amount - discount);
     }
 
+    /// <summary>
+    /// Helper method to convert payment entity to response DTO. This abstracts away the internal structure of the payment entity and allows us to control exactly what information is returned to the client. For example, we can choose to mask certain fields or format the data differently if needed. This also keeps our controller actions cleaner and more focused on handling HTTP requests/responses rather than data transformation logic.
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
     private static PaymentResponse ToResponse(payment p) => new()
     {
         PaymentId = p.payment_id,
@@ -219,6 +246,10 @@ public class PaymentsController : ControllerBase
         CreatedAt = p.created_at
     };
 
+/// <summary>
+/// Helper method to get the authenticated user's ID from the JWT claims. Returns null if the claim is not present or cannot be parsed as an integer. This is used to identify the user making the request and ensure they can only access their own bookings and payments. We check both "user_id" and ClaimTypes.NameIdentifier to be flexible with different token configurations, but ideally we should standardize on one claim for user ID in our authentication implementation.
+/// </summary>
+/// <returns></returns>
     private int? GetUserIdOrNull()
     {
         var raw = User.FindFirstValue("user_id") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -227,6 +258,11 @@ public class PaymentsController : ControllerBase
 
     private static string NormalizePostal(string v) => Regex.Replace(v ?? "", @"\s+", "").Trim().ToUpperInvariant();
 
+/// <summary>
+/// Helper method to validate the input for the booking finalization endpoint. This checks that all required fields are present and in the correct format before we attempt to process the payment or create a booking. By validating early, we can return clear error messages to the client and avoid unnecessary database operations or payment processing attempts with invalid data. This also helps keep our controller action cleaner by abstracting the validation logic into a separate method.
+/// </summary>
+/// <param name="req"></param>
+/// <returns></returns>
     private static string? ValidateFinalizeInput(PaymentCreateRequest req)
     {
         if (req.OccurrenceId <= 0) return "OccurrenceId must be valid.";

@@ -1,0 +1,92 @@
+\doxysection{Event\+Master.\+Api.\+Controllers.\+Payments\+Controller Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller}{}\label{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller}\index{EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}}
+
+
+Controller for handling payments and booking finalization. This includes validating coupons, processing payments through the payment emulator, and creating bookings in a concurrency-\/safe manner to prevent overselling. All endpoints require authentication since they involve sensitive payment and booking information.  
+
+
+Inheritance diagram for Event\+Master.\+Api.\+Controllers.\+Payments\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_ac3b28fca74992d185e6eeb49cccaf9ac}\label{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_ac3b28fca74992d185e6eeb49cccaf9ac} 
+{\bfseries Payments\+Controller} (\mbox{\hyperlink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context}} db, \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_emulator_store}{Payment\+Emulator\+Store}} store)
+\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_response}{Payment\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_aa0d3f6a7ce0e321b29431d2778434616}{Get\+By\+Booking\+Id}} (int booking\+Id)
+\begin{DoxyCompactList}\small\item\em Get payment details by booking ID. Only the customer who owns the booking can access this information. Returns 404 if booking or payment not found, 403 if user tries to access someone else\textquotesingle{}s booking. \end{DoxyCompactList}\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_coupon_validate_response}{Coupon\+Validate\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_ac2092c92a369d40c6d0ded67beb5d2f1}{Validate\+Coupon}} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_coupon_validate_request}{Coupon\+Validate\+Request}} req)
+\begin{DoxyCompactList}\small\item\em Validate a coupon code against the payment emulator\textquotesingle{}s list of coupons. Checks if the coupon exists, is active, not expired, and meets minimum amount requirements. Returns whether the coupon is valid, any applicable discount, and the final amount after discount. This endpoint can be used by the frontend to provide real-\/time feedback to users when they enter a coupon code during checkout. It does not require authentication since we want to allow users to check coupons before they log in or create an account. However, it could be rate-\/limited to prevent abuse (e.\+g. brute-\/forcing coupon codes). \end{DoxyCompactList}\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response}{Booking\+Finalize\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_a5a8f4e4d90beefbade810f20e2a07179}{Finalize\+Booking}} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_create_request}{Payment\+Create\+Request}} req)
+\begin{DoxyCompactList}\small\item\em Finalize a booking by processing payment and creating a booking record in the database. This endpoint performs several critical functions in a single transaction to ensure data integrity and prevent overselling\+: \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Controller for handling payments and booking finalization. This includes validating coupons, processing payments through the payment emulator, and creating bookings in a concurrency-\/safe manner to prevent overselling. All endpoints require authentication since they involve sensitive payment and booking information. 
+
+\label{doc-func-members}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_a5a8f4e4d90beefbade810f20e2a07179}\index{EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}!FinalizeBooking@{FinalizeBooking}}
+\index{FinalizeBooking@{FinalizeBooking}!EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}}
+\doxysubsubsection{\texorpdfstring{FinalizeBooking()}{FinalizeBooking()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_a5a8f4e4d90beefbade810f20e2a07179} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_booking_finalize_response}{Booking\+Finalize\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Payments\+Controller.\+Finalize\+Booking (\begin{DoxyParamCaption}\item[{\mbox{[}\+From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_create_request}{Payment\+Create\+Request}}}]{req}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Finalize a booking by processing payment and creating a booking record in the database. This endpoint performs several critical functions in a single transaction to ensure data integrity and prevent overselling\+: 
+
+
+\begin{DoxyParams}{Parameters}
+{\em req} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_aa0d3f6a7ce0e321b29431d2778434616}\index{EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}!GetByBookingId@{GetByBookingId}}
+\index{GetByBookingId@{GetByBookingId}!EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}}
+\doxysubsubsection{\texorpdfstring{GetByBookingId()}{GetByBookingId()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_aa0d3f6a7ce0e321b29431d2778434616} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_payment_response}{Payment\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Payments\+Controller.\+Get\+By\+Booking\+Id (\begin{DoxyParamCaption}\item[{int}]{booking\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get payment details by booking ID. Only the customer who owns the booking can access this information. Returns 404 if booking or payment not found, 403 if user tries to access someone else\textquotesingle{}s booking. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em booking\+Id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_ac2092c92a369d40c6d0ded67beb5d2f1}\index{EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}!ValidateCoupon@{ValidateCoupon}}
+\index{ValidateCoupon@{ValidateCoupon}!EventMaster.Api.Controllers.PaymentsController@{EventMaster.Api.Controllers.PaymentsController}}
+\doxysubsubsection{\texorpdfstring{ValidateCoupon()}{ValidateCoupon()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_payments_controller_ac2092c92a369d40c6d0ded67beb5d2f1} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_coupon_validate_response}{Coupon\+Validate\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Payments\+Controller.\+Validate\+Coupon (\begin{DoxyParamCaption}\item[{\mbox{[}\+From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_payments_1_1_coupon_validate_request}{Coupon\+Validate\+Request}}}]{req}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Validate a coupon code against the payment emulator\textquotesingle{}s list of coupons. Checks if the coupon exists, is active, not expired, and meets minimum amount requirements. Returns whether the coupon is valid, any applicable discount, and the final amount after discount. This endpoint can be used by the frontend to provide real-\/time feedback to users when they enter a coupon code during checkout. It does not require authentication since we want to allow users to check coupons before they log in or create an account. However, it could be rate-\/limited to prevent abuse (e.\+g. brute-\/forcing coupon codes). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em req} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Controllers/Payment\+Controller.\+cs\end{DoxyCompactItemize}

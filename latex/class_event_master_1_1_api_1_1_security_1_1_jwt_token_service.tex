@@ -1,0 +1,24 @@
+\doxysection{Event\+Master.\+Api.\+Security.\+Jwt\+Token\+Service Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service}{}\label{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service}\index{EventMaster.Api.Security.JwtTokenService@{EventMaster.Api.Security.JwtTokenService}}
+
+
+Provides functionality to create JSON \doxylink{namespace_event_master_1_1_web}{Web} Tokens (JWT) for authenticated users in the application. This service takes user information and generates a JWT that can be used for authentication and authorization purposes in subsequent requests. The Create\+Token method accepts a user object (which should contain properties such as user ID, username, role, email, and display name) and constructs a JWT with claims based on this information. The token is signed using a symmetric security key derived from the configuration options provided through the \doxylink{class_event_master_1_1_api_1_1_security_1_1_jwt_options}{Jwt\+Options} class. The generated token includes claims for the user\textquotesingle{}s ID, username, role, email, and display name, and it is set to expire after a specified duration defined in the \doxylink{class_event_master_1_1_api_1_1_security_1_1_jwt_options}{Jwt\+Options}. This service is typically used in the authentication workflow of the application, where after validating user credentials, a JWT is created and returned to the client for use in authenticating future requests.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service_a02b454589de8f309648526fef90041cd}\label{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service_a02b454589de8f309648526fef90041cd} 
+{\bfseries Jwt\+Token\+Service} (IOptions$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_jwt_options}{Jwt\+Options}} $>$ opts)
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service_a36359adb6f5c1636a31635a4b91532fe}\label{class_event_master_1_1_api_1_1_security_1_1_jwt_token_service_a36359adb6f5c1636a31635a4b91532fe} 
+string {\bfseries Create\+Token} (\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1user}{user}} u)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides functionality to create JSON \doxylink{namespace_event_master_1_1_web}{Web} Tokens (JWT) for authenticated users in the application. This service takes user information and generates a JWT that can be used for authentication and authorization purposes in subsequent requests. The Create\+Token method accepts a user object (which should contain properties such as user ID, username, role, email, and display name) and constructs a JWT with claims based on this information. The token is signed using a symmetric security key derived from the configuration options provided through the \doxylink{class_event_master_1_1_api_1_1_security_1_1_jwt_options}{Jwt\+Options} class. The generated token includes claims for the user\textquotesingle{}s ID, username, role, email, and display name, and it is set to expire after a specified duration defined in the \doxylink{class_event_master_1_1_api_1_1_security_1_1_jwt_options}{Jwt\+Options}. This service is typically used in the authentication workflow of the application, where after validating user credentials, a JWT is created and returned to the client for use in authenticating future requests. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Security/Jwt\+Token\+Service.\+cs\end{DoxyCompactItemize}

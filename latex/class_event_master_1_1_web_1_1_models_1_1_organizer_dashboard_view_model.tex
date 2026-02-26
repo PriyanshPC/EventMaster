@@ -1,0 +1,33 @@
+\doxysection{Event\+Master.\+Web.\+Models.\+Organizer\+Dashboard\+View\+Model Class Reference}
+\hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model}{}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model}\index{EventMaster.Web.Models.OrganizerDashboardViewModel@{EventMaster.Web.Models.OrganizerDashboardViewModel}}
+
+
+View\+Model for the organizer dashboard page, which includes the organizer\textquotesingle{}s profile settings, a list of their events with relevant details, a form for creating new events, and a list of pending reviews from customers. Contains properties for the active tab (events, create event, or reviews), organizer profile information, a list of event cards with details for each event occurrence, a form View\+Model for creating new events with dropdown options for categories and venues, and a list of pending reviews with details about the review and the customer who submitted it. This View\+Model is populated by calling the Auth API to fetch the organizer\textquotesingle{}s profile information, the Events API to fetch their events, and the Reviews API to fetch pending reviews for their events. The View\+Model is used to render the organizer dashboard page with all the necessary information and controls for managing their events and reviews.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a343df80d37482f7638cf63fcba092c7c}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a343df80d37482f7638cf63fcba092c7c} 
+string {\bfseries Active\+Tab} = "{}events"{}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a0259a1b5d27f2cd36e3d44b61005b6fd}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a0259a1b5d27f2cd36e3d44b61005b6fd} 
+\mbox{\hyperlink{class_event_master_1_1_web_1_1_models_1_1_me_settings_view_model}{Me\+Settings\+View\+Model}} {\bfseries Settings} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_ac343ff19d09676cb47e6cd99451a5a29}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_ac343ff19d09676cb47e6cd99451a5a29} 
+List$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_models_1_1_organizer_event_card_view_model}{Organizer\+Event\+Card\+View\+Model}} $>$ {\bfseries Event\+Cards} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a7234ab3d5a48ef3723ca768ced731f35}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_a7234ab3d5a48ef3723ca768ced731f35} 
+\mbox{\hyperlink{class_event_master_1_1_web_1_1_models_1_1_organizer_create_event_form_view_model}{Organizer\+Create\+Event\+Form\+View\+Model}} {\bfseries Add\+Event\+Form} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_ac64af03051a167e1a2e2ebd9dd02c817}\label{class_event_master_1_1_web_1_1_models_1_1_organizer_dashboard_view_model_ac64af03051a167e1a2e2ebd9dd02c817} 
+List$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_models_1_1_organizer_pending_review_view_model}{Organizer\+Pending\+Review\+View\+Model}} $>$ {\bfseries Pending\+Reviews} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+View\+Model for the organizer dashboard page, which includes the organizer\textquotesingle{}s profile settings, a list of their events with relevant details, a form for creating new events, and a list of pending reviews from customers. Contains properties for the active tab (events, create event, or reviews), organizer profile information, a list of event cards with details for each event occurrence, a form View\+Model for creating new events with dropdown options for categories and venues, and a list of pending reviews with details about the review and the customer who submitted it. This View\+Model is populated by calling the Auth API to fetch the organizer\textquotesingle{}s profile information, the Events API to fetch their events, and the Reviews API to fetch pending reviews for their events. The View\+Model is used to render the organizer dashboard page with all the necessary information and controls for managing their events and reviews. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Web/\+Models/Organizer\+Dashboard\+View\+Model.\+cs\end{DoxyCompactItemize}

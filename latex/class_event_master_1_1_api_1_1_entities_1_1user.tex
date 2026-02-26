@@ -1,0 +1,63 @@
+\doxysection{Event\+Master.\+Api.\+Entities.\+user Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_entities_1_1user}{}\label{class_event_master_1_1_api_1_1_entities_1_1user}\index{EventMaster.Api.Entities.user@{EventMaster.Api.Entities.user}}
+
+
+Entity class representing the "{}user"{} table in the database. This class is used by Entity Framework Core to map the "{}user"{} table to a C\# class, allowing for querying and manipulating user data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}user"{} table, such as user\+\_\+id, role, name, age, phone, email, username, password, status, created\+\_\+at, and updated\+\_\+at. It also defines navigation properties for related entities, such as \+\_\+events (the events organized by this user), bookings (the bookings made by this user), replies (the replies made by this user), and reviews (the reviews left by this user). This entity is a fundamental part of the Events API and is used in various operations such as user registration, authentication, profile management, and associating users with their organized events, bookings, reviews, and replies.  
+
+
+\doxysubsubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_ab7f4f2f0ef0fcd38f06aa91afa411580}\label{class_event_master_1_1_api_1_1_entities_1_1user_ab7f4f2f0ef0fcd38f06aa91afa411580} 
+int {\bfseries user\+\_\+id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a14aca65a9d51d026a53126a7a65d40eb}\label{class_event_master_1_1_api_1_1_entities_1_1user_a14aca65a9d51d026a53126a7a65d40eb} 
+string {\bfseries role} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_ad3452a0ad6f4889a3deb619c215cf790}\label{class_event_master_1_1_api_1_1_entities_1_1user_ad3452a0ad6f4889a3deb619c215cf790} 
+string {\bfseries name} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a4771c186a8517ca53f260d8793a964c6}\label{class_event_master_1_1_api_1_1_entities_1_1user_a4771c186a8517ca53f260d8793a964c6} 
+int {\bfseries age}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a10210384599aa5d9993b7d4874680669}\label{class_event_master_1_1_api_1_1_entities_1_1user_a10210384599aa5d9993b7d4874680669} 
+string? {\bfseries phone}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_aba09c0f24cd73eff15b27afc3f652b7b}\label{class_event_master_1_1_api_1_1_entities_1_1user_aba09c0f24cd73eff15b27afc3f652b7b} 
+string {\bfseries email} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_af0493805ba4993a9d039adeb6137821c}\label{class_event_master_1_1_api_1_1_entities_1_1user_af0493805ba4993a9d039adeb6137821c} 
+string {\bfseries username} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a13c34f0d4e2ae7df4a3d5ae6ae037a78}\label{class_event_master_1_1_api_1_1_entities_1_1user_a13c34f0d4e2ae7df4a3d5ae6ae037a78} 
+string {\bfseries password} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a6b95890b15a6e69f79d064b64934290b}\label{class_event_master_1_1_api_1_1_entities_1_1user_a6b95890b15a6e69f79d064b64934290b} 
+string {\bfseries status} = null!\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_ac2409df85317b3bff5c1e5a762f23b21}\label{class_event_master_1_1_api_1_1_entities_1_1user_ac2409df85317b3bff5c1e5a762f23b21} 
+Date\+Time {\bfseries created\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_aad54b894c4628c1a47cc7058178310d4}\label{class_event_master_1_1_api_1_1_entities_1_1user_aad54b894c4628c1a47cc7058178310d4} 
+Date\+Time {\bfseries updated\+\_\+at}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a5271f377684a53b8c6f4d1cb45b70d03}\label{class_event_master_1_1_api_1_1_entities_1_1user_a5271f377684a53b8c6f4d1cb45b70d03} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1__event}{\+\_\+event}} $>$ {\bfseries \+\_\+events} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1__event}{\+\_\+event}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_ae52a2336c691d4aa2d2cc8a575a9bdd3}\label{class_event_master_1_1_api_1_1_entities_1_1user_ae52a2336c691d4aa2d2cc8a575a9bdd3} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1booking}{booking}} $>$ {\bfseries bookings} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1booking}{booking}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_a51426aa0a3815896ddfa6c9b791f3693}\label{class_event_master_1_1_api_1_1_entities_1_1user_a51426aa0a3815896ddfa6c9b791f3693} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1reply}{reply}} $>$ {\bfseries replies} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1reply}{reply}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_entities_1_1user_ac0e006a6aa1cace550daf86b6e5ee42f}\label{class_event_master_1_1_api_1_1_entities_1_1user_ac0e006a6aa1cace550daf86b6e5ee42f} 
+virtual ICollection$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1review}{review}} $>$ {\bfseries reviews} = new List$<$\mbox{\hyperlink{class_event_master_1_1_api_1_1_entities_1_1review}{review}}$>$()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entity class representing the "{}user"{} table in the database. This class is used by Entity Framework Core to map the "{}user"{} table to a C\# class, allowing for querying and manipulating user data in the database using LINQ and EF Core\textquotesingle{}s Db\+Context. The class includes properties that correspond to the columns in the "{}user"{} table, such as user\+\_\+id, role, name, age, phone, email, username, password, status, created\+\_\+at, and updated\+\_\+at. It also defines navigation properties for related entities, such as \+\_\+events (the events organized by this user), bookings (the bookings made by this user), replies (the replies made by this user), and reviews (the reviews left by this user). This entity is a fundamental part of the Events API and is used in various operations such as user registration, authentication, profile management, and associating users with their organized events, bookings, reviews, and replies. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Entities/user.\+cs\end{DoxyCompactItemize}

@@ -1,0 +1,36 @@
+\doxysection{Event\+Master.\+Web.\+Services.\+Auth\+Api\+Client Class Reference}
+\hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client}{}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client}\index{EventMaster.Web.Services.AuthApiClient@{EventMaster.Web.Services.AuthApiClient}}
+
+
+Client for calling authentication-\/related API endpoints, such as login, registration, profile management, and password changes.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a91341ea371b0f119c230cf4fa2b0222f}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a91341ea371b0f119c230cf4fa2b0222f} 
+{\bfseries Auth\+Api\+Client} (Http\+Client http)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_ae458ef339c9cd87f54546b55d4ac01ea}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_ae458ef339c9cd87f54546b55d4ac01ea} 
+async Task$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_auth_response}{Auth\+Response}}?$>$ {\bfseries Login\+Async} (\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_user_login_request}{User\+Login\+Request}} req)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a34439365548f91d75721e95b5b721052}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a34439365548f91d75721e95b5b721052} 
+async Task$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_auth_response}{Auth\+Response}}?$>$ {\bfseries Register\+Async} (\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_user_register_request}{User\+Register\+Request}} req)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a27878b4e31474d5dd2bc2c3659774205}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a27878b4e31474d5dd2bc2c3659774205} 
+async Task$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_me_response}{Me\+Response}}?$>$ {\bfseries Me\+Async} (string jwt)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a6986ae415155a973eef9f5618627b20b}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a6986ae415155a973eef9f5618627b20b} 
+async Task$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_api_operation_result}{Api\+Operation\+Result}} $>$ {\bfseries Update\+Profile\+Async} (\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_update_profile_request}{Update\+Profile\+Request}} req, string jwt)
+\item 
+\Hypertarget{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a8223b0a46c41fdf8b921b71956047d07}\label{class_event_master_1_1_web_1_1_services_1_1_auth_api_client_a8223b0a46c41fdf8b921b71956047d07} 
+async Task$<$ \mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_api_operation_result}{Api\+Operation\+Result}} $>$ {\bfseries Change\+Password\+Async} (\mbox{\hyperlink{class_event_master_1_1_web_1_1_services_1_1_api_dtos_1_1_change_password_request}{Change\+Password\+Request}} req, string jwt)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Client for calling authentication-\/related API endpoints, such as login, registration, profile management, and password changes. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Web/\+Services/Auth\+Api\+Client.\+cs\end{DoxyCompactItemize}

@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Web.Models;
-
+/// <summary>
+/// ViewModel for the landing page, which displays a selection of upcoming events organized by category. Contains a list of category rows, where each row has a category name and a list of event cards with basic information (event name, date/time, venue, image) to entice users to click through to the event details page. This ViewModel is populated by calling the Events API to fetch a curated selection of upcoming events for each category to feature on the landing page.
+/// </summary>
 public class LandingPageViewModel
 {
     public List<LandingCategoryRowViewModel> Rows { get; set; } = new();

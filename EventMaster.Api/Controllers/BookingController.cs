@@ -13,6 +13,10 @@ namespace EventMaster.Api.Controllers;
 [Authorize(Roles = "CUSTOMER,ORGANIZER")]
 public class BookingsController : ControllerBase
 {
+    /// <summary>
+    /// Controller for managing bookings by customers. 
+    /// Organizers can also view bookings but cannot create/cancel them.
+    /// </summary>
     private readonly EventMasterDbContext _db;
     private readonly CurrentUser _me;
 

@@ -1,0 +1,115 @@
+\doxysection{Event\+Master.\+Api.\+Controllers.\+Review\+Controller Class Reference}
+\hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller}{}\label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller}\index{EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}}
+
+
+Controller for managing event reviews and organizer replies. Customers can create reviews for events they attended, and organizers can reply to reviews for their events. All users can view reviews and replies. The controller includes endpoints for creating reviews, checking review eligibility, retrieving reviews by ID or by event, and creating organizer replies. Authorization is enforced to ensure only eligible customers can create reviews and only event organizers can reply to reviews for their events.  
+
+
+Inheritance diagram for Event\+Master.\+Api.\+Controllers.\+Review\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_event_master_1_1_api_1_1_controllers_1_1_review_controller}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a82fbed4dd0f0249d4499f790b727e58b}\label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a82fbed4dd0f0249d4499f790b727e58b} 
+{\bfseries Review\+Controller} (\mbox{\hyperlink{class_event_master_1_1_api_1_1_data_1_1_event_master_db_context}{Event\+Master\+Db\+Context}} db, \mbox{\hyperlink{class_event_master_1_1_api_1_1_security_1_1_current_user}{Current\+User}} me)
+\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a46d9f4329a18bd1102ce9aae908c82b5}\label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a46d9f4329a18bd1102ce9aae908c82b5} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_response}{Review\+Response}} $>$ $>$ {\bfseries Create} (\mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_create_request}{Review\+Create\+Request}} req)
+\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_eligibility_response}{Review\+Eligibility\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a26eed034612c63185b22ead11fa96545}{Get\+Eligibility}} (int event\+Id)
+\begin{DoxyCompactList}\small\item\em GET /api/reviews/eligibility/\{event\+Id\} Checks if the currently authenticated customer is eligible to add a review for the specified event. Eligibility requires that the customer has a confirmed booking for an occurrence of the event that has been completed. Returns a boolean indicating eligibility and, if eligible, the ID of the occurrence they can review. This allows the frontend to determine whether to show the "{}\+Add Review"{} option and which occurrence the review will be associated with. Only customers can access this endpoint, and it returns 403 if a non-\/customer tries to access it. It returns 404 if the event does not exist. \end{DoxyCompactList}\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_response}{Review\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a5dd5637738b48e3b78267cb952c093ec}{Get\+By\+Id}} (int id)
+\begin{DoxyCompactList}\small\item\em GET /api/reviews/\{id\} Retrieves a review by its ID, including any organizer replies. This endpoint is public and does not require authentication, allowing anyone to view reviews. The response includes the review details (rating, comment, customer info) and a list of replies from the organizer, ordered by creation time. If the review with the specified ID does not exist, it returns a 404 error. This allows users to read specific reviews and see if the organizer has responded to any feedback. \end{DoxyCompactList}\item 
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a9cb0d349770b96386cb13ab8ff9922b4}\label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a9cb0d349770b96386cb13ab8ff9922b4} 
+async Task$<$ Action\+Result$<$ List$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_response}{Review\+Response}} $>$ $>$ $>$ {\bfseries Get\+For\+Event} (int event\+Id)
+\item 
+async Task$<$ Action\+Result$<$ List$<$ object $>$ $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a208287e29dc255871e68962a93a6a189}{Get\+Pending\+Replies}} ()
+\begin{DoxyCompactList}\small\item\em GET /api/reviews/mine/pending-\/replies Retrieves a list of reviews for the authenticated organizer\textquotesingle{}s events that do not yet have a reply. This allows organizers to easily find reviews that they may want to respond to. The endpoint returns the review details along with the associated event information and customer name. Only users with the "{}\+ORGANIZER"{} role can access this endpoint, and it will return a 403 error for any other roles. This helps organizers stay engaged with their customers by showing them which reviews still need attention. The reviews are ordered by creation time, with the most recent reviews appearing first. This way, organizers can prioritize responding to newer reviews. If the organizer has no pending reviews, it returns an empty list. This endpoint is designed to improve the organizer\textquotesingle{}s ability to manage customer feedback effectively. \end{DoxyCompactList}\item 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_reply_response}{Reply\+Response}} $>$ $>$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a59b26e7559f17ea519d00d3f9f88a594}{Create\+Reply}} (int review\+Id, \mbox{[}From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_reply_create_request}{Reply\+Create\+Request}} req)
+\begin{DoxyCompactList}\small\item\em POST /api/reviews/\{review\+Id\}/replies Allows an event organizer to reply to a review for their event. The organizer can only reply if they own the event associated with the review. The request body must include the reply text. If the review already has a reply, it returns a 409 conflict error. If the review or event does not exist, it returns a 404 error. If the authenticated user is not the organizer of the event, it returns a 403 error. On success, it creates the reply and returns the details of the newly created reply in the response. This endpoint helps organizers engage with their customers by allowing them to respond to feedback on their events. The reply is associated with the review and includes the organizer\textquotesingle{}s name and the time it was created. This allows customers to see that the organizer has acknowledged their review and provided a response, which can improve customer satisfaction and trust in the platform. By enforcing that only the event organizer can reply to reviews for their events, we ensure that responses are relevant and come from the appropriate party. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Controller for managing event reviews and organizer replies. Customers can create reviews for events they attended, and organizers can reply to reviews for their events. All users can view reviews and replies. The controller includes endpoints for creating reviews, checking review eligibility, retrieving reviews by ID or by event, and creating organizer replies. Authorization is enforced to ensure only eligible customers can create reviews and only event organizers can reply to reviews for their events. 
+
+\label{doc-func-members}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a59b26e7559f17ea519d00d3f9f88a594}\index{EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}!CreateReply@{CreateReply}}
+\index{CreateReply@{CreateReply}!EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}}
+\doxysubsubsection{\texorpdfstring{CreateReply()}{CreateReply()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a59b26e7559f17ea519d00d3f9f88a594} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_reply_response}{Reply\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Review\+Controller.\+Create\+Reply (\begin{DoxyParamCaption}\item[{int}]{review\+Id}{, }\item[{\mbox{[}\+From\+Body\mbox{]} \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_reply_create_request}{Reply\+Create\+Request}}}]{req}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+POST /api/reviews/\{review\+Id\}/replies Allows an event organizer to reply to a review for their event. The organizer can only reply if they own the event associated with the review. The request body must include the reply text. If the review already has a reply, it returns a 409 conflict error. If the review or event does not exist, it returns a 404 error. If the authenticated user is not the organizer of the event, it returns a 403 error. On success, it creates the reply and returns the details of the newly created reply in the response. This endpoint helps organizers engage with their customers by allowing them to respond to feedback on their events. The reply is associated with the review and includes the organizer\textquotesingle{}s name and the time it was created. This allows customers to see that the organizer has acknowledged their review and provided a response, which can improve customer satisfaction and trust in the platform. By enforcing that only the event organizer can reply to reviews for their events, we ensure that responses are relevant and come from the appropriate party. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em review\+Id} & \\
+\hline
+{\em req} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a5dd5637738b48e3b78267cb952c093ec}\index{EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}!GetById@{GetById}}
+\index{GetById@{GetById}!EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}}
+\doxysubsubsection{\texorpdfstring{GetById()}{GetById()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a5dd5637738b48e3b78267cb952c093ec} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_response}{Review\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Review\+Controller.\+Get\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+GET /api/reviews/\{id\} Retrieves a review by its ID, including any organizer replies. This endpoint is public and does not require authentication, allowing anyone to view reviews. The response includes the review details (rating, comment, customer info) and a list of replies from the organizer, ordered by creation time. If the review with the specified ID does not exist, it returns a 404 error. This allows users to read specific reviews and see if the organizer has responded to any feedback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a26eed034612c63185b22ead11fa96545}\index{EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}!GetEligibility@{GetEligibility}}
+\index{GetEligibility@{GetEligibility}!EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}}
+\doxysubsubsection{\texorpdfstring{GetEligibility()}{GetEligibility()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a26eed034612c63185b22ead11fa96545} 
+async Task$<$ Action\+Result$<$ \mbox{\hyperlink{class_event_master_1_1_api_1_1_d_t_os_1_1_reviews_1_1_review_eligibility_response}{Review\+Eligibility\+Response}} $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Review\+Controller.\+Get\+Eligibility (\begin{DoxyParamCaption}\item[{int}]{event\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+GET /api/reviews/eligibility/\{event\+Id\} Checks if the currently authenticated customer is eligible to add a review for the specified event. Eligibility requires that the customer has a confirmed booking for an occurrence of the event that has been completed. Returns a boolean indicating eligibility and, if eligible, the ID of the occurrence they can review. This allows the frontend to determine whether to show the "{}\+Add Review"{} option and which occurrence the review will be associated with. Only customers can access this endpoint, and it returns 403 if a non-\/customer tries to access it. It returns 404 if the event does not exist. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event\+Id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a208287e29dc255871e68962a93a6a189}\index{EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}!GetPendingReplies@{GetPendingReplies}}
+\index{GetPendingReplies@{GetPendingReplies}!EventMaster.Api.Controllers.ReviewController@{EventMaster.Api.Controllers.ReviewController}}
+\doxysubsubsection{\texorpdfstring{GetPendingReplies()}{GetPendingReplies()}}
+{\footnotesize\ttfamily \label{class_event_master_1_1_api_1_1_controllers_1_1_review_controller_a208287e29dc255871e68962a93a6a189} 
+async Task$<$ Action\+Result$<$ List$<$ object $>$ $>$ $>$ Event\+Master.\+Api.\+Controllers.\+Review\+Controller.\+Get\+Pending\+Replies (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+GET /api/reviews/mine/pending-\/replies Retrieves a list of reviews for the authenticated organizer\textquotesingle{}s events that do not yet have a reply. This allows organizers to easily find reviews that they may want to respond to. The endpoint returns the review details along with the associated event information and customer name. Only users with the "{}\+ORGANIZER"{} role can access this endpoint, and it will return a 403 error for any other roles. This helps organizers stay engaged with their customers by showing them which reviews still need attention. The reviews are ordered by creation time, with the most recent reviews appearing first. This way, organizers can prioritize responding to newer reviews. If the organizer has no pending reviews, it returns an empty list. This endpoint is designed to improve the organizer\textquotesingle{}s ability to manage customer feedback effectively. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Event\+Master.\+Api/\+Controllers/Review\+Controller.\+cs\end{DoxyCompactItemize}
