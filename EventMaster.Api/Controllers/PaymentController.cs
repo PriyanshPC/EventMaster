@@ -120,6 +120,9 @@ public class PaymentsController : ControllerBase
 
         if (venueSeating.Value)
         {
+            if (normalizedSeats.Count == 0)
+                return Conflict(new { message = "Seat selection required for the booking." });
+
             if (normalizedSeats.Count != req.Quantity)
                 return Conflict(new { message = "Seats count must match quantity." });
 
@@ -134,7 +137,8 @@ public class PaymentsController : ControllerBase
         }
         else
         {
-            normalizedSeats.Clear();
+            if (normalizedSeats.Count > 0)
+                return Conflict(new { message = "Seat selection is not available for this venue." });
         }
 
         occ.remaining_capacity -= req.Quantity;
