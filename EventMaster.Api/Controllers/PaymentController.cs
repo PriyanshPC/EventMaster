@@ -143,10 +143,6 @@ public class PaymentsController : ControllerBase
 
         occ.remaining_capacity -= req.Quantity;
 
-        // Deduct card only once lock+capacity checks pass
-        matchedCard.Amount_Balance -= amountToCharge;
-        await _store.WriteAsync(data);
-
         var bookingSeats = normalizedSeats.Count > 0 ? string.Join(",", normalizedSeats) : null;
         var booking = new booking
         {
