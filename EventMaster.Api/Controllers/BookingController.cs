@@ -13,6 +13,10 @@ namespace EventMaster.Api.Controllers;
 [Authorize(Roles = "CUSTOMER,ORGANIZER")]
 public class BookingsController : ControllerBase
 {
+    /// <summary>
+    /// Controller for managing bookings by customers. 
+    /// Organizers can also view bookings but cannot create/cancel them.
+    /// </summary>
     private readonly EventMasterDbContext _db;
     private readonly CurrentUser _me;
 
@@ -123,15 +127,23 @@ public class BookingsController : ControllerBase
         if (occ.remaining_capacity < req.Quantity)
             return BadRequest(new { message = "Not enough remaining capacity." });
 
-        // Seats logic (optional)
-        // Booking DTO might have Seats list OR a comma string depending on your DTO.
-        // This controller supports both patterns:
-        // - If req.Seats is present, it uses that.
-        // - If your BookingCreateRequest instead has SeatsOccupied string, adjust accordingly.
+        // Seats logic enforces venue configuration.
         var requestedSeats = NormalizeSeats(req.Seats);
 
-        if (requestedSeats.Count > 0)
+        var venueSeating = await _db.venues
+            .AsNoTracking()
+            .Where(v => v.venue_id == occ.venue_id)
+            .Select(v => (bool?)v.seating)
+            .FirstOrDefaultAsync();
+
+        if (venueSeating is null)
+            return Conflict(new { message = "Venue not found for selected occurrence." });
+
+        if (venueSeating.Value)
         {
+            if (requestedSeats.Count == 0)
+                return Conflict(new { message = "Seat selection required for the booking." });
+
             if (requestedSeats.Count != req.Quantity)
                 return BadRequest(new { message = "Seats count must match quantity." });
 
@@ -147,6 +159,10 @@ public class BookingsController : ControllerBase
                 occSeats.Add(s);
 
             occ.seats_occupied = JoinSeats(occSeats);
+        }
+        else if (requestedSeats.Count > 0)
+        {
+            return Conflict(new { message = "Seat selection is not available for this venue." });
         }
 
         // Update remaining capacity

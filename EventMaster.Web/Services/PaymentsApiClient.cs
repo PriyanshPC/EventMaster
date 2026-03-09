@@ -4,7 +4,9 @@ using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace EventMaster.Web.Services;
-
+/// <summary>
+/// Client for calling payment-related API endpoints, such as finalizing bookings after payment. Currently only has one endpoint, but can be expanded in the future to include other payment-related operations if needed.
+/// </summary>
 public class PaymentsApiClient
 {
     private readonly HttpClient _http;

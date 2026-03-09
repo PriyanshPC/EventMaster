@@ -7,7 +7,16 @@ using System.Security.Claims;
 using System.Text.Json;
 
 namespace EventMaster.Web.Controllers;
-
+/// <summary>
+/// Manages the booking flow for event occurrences, including selecting ticket quantity and seats, and processing payments. Uses session storage to maintain booking intent across steps. Integrates with Events API to retrieve occurrence details and Payments API to finalize bookings. Ensures only authenticated users can book and provides feedback on payment success or failure.
+/// The flow is:
+/// 1. User selects an event occurrence and initiates booking.
+/// 2. User specifies ticket quantity and optionally selects seats (if seating is enabled).
+/// 3. User proceeds to payment, where they enter payment details and apply any discount coupons.
+/// 4. Upon successful payment, the booking is finalized and the user is redirected to their booking details page. If payment fails, an appropriate message is shown and the user can retry.
+/// Throughout the process, the controller ensures that the booking intent is preserved in session storage, allowing users to navigate back and forth without losing their selections. It also validates user input and provides feedback on any issues (e.g., seat availability, payment errors).
+/// This controller relies on the Events API to fetch occurrence details (including pricing and seat availability) and the Payments API to process payments and finalize bookings. It also uses TempData to display notifications to the user about the status of their booking and payment attempts.
+/// </summary>
 public class BookingsController : Controller
 {
     private const string SessionIntentKey = "Booking.Intent";

@@ -5,7 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventMaster.Controllers;
 
 public class HomeController : Controller
-{
+{/// <summary>
+/// Displays the landing page with upcoming events grouped by category. Integrates with the Events API to fetch upcoming events and constructs view models for rendering. Normalizes category names for grouping and creates URL-friendly slugs for category links. The landing page provides a snapshot of popular events, encouraging users to explore and book tickets.
+/// The Index action retrieves upcoming events, groups them by normalized category, and builds a view model
+/// that includes event details formatted for display (date/time, location) and image URLs. It ensures that categories are displayed in a user-friendly way while maintaining consistent grouping logic.
+/// The NormalizeCategory method standardizes category names for grouping, treating null/empty as "other
+/// and ignoring case and whitespace. The Slug method creates URL-friendly slugs for category links by replacing non-alphanumeric characters with hyphens.
+/// This controller relies on the Events API to fetch event data and uses configuration settings to construct image URLs. The resulting view model is passed to the Razor view for rendering the landing page UI.
+/// </summary>
     private readonly EventsApiClient _eventsApi;
     private readonly IConfiguration _config;
 

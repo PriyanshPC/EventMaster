@@ -1,5 +1,8 @@
 namespace EventMaster.Web.Models;
 
+/// <summary>
+/// ViewModel for the organizer dashboard page, which includes the organizer's profile settings, a list of their events with relevant details, a form for creating new events, and a list of pending reviews from customers. Contains properties for the active tab (events, create event, or reviews), organizer profile information, a list of event cards with details for each event occurrence, a form ViewModel for creating new events with dropdown options for categories and venues, and a list of pending reviews with details about the review and the customer who submitted it. This ViewModel is populated by calling the Auth API to fetch the organizer's profile information, the Events API to fetch their events, and the Reviews API to fetch pending reviews for their events. The ViewModel is used to render the organizer dashboard page with all the necessary information and controls for managing their events and reviews.
+/// </summary>
 public class OrganizerDashboardViewModel
 {
     public string ActiveTab { get; set; } = "events";

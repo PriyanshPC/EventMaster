@@ -1,5 +1,7 @@
 namespace EventMaster.Api.DTOs.Bookings;
-
+/// <summary>
+/// Response model for a booking card in the dashboard.
+/// </summary>
 public class BookingDashboardCardResponse
 {
     public int BookingId { get; set; }

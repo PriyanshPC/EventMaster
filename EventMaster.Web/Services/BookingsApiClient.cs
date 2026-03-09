@@ -3,7 +3,9 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace EventMaster.Web.Services;
-
+/// <summary>
+/// Client for calling booking-related API endpoints, such as fetching dashboard bookings, booking details, canceling bookings with refunds, fetching venues, and creating new bookings.
+/// </summary>
 public class BookingsApiClient
 {
     private readonly HttpClient _http;
