@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Reviews;
-
+/// <summary>
+/// DTO for creating a review for an event.
+/// </summary>
 public class ReviewCreateRequest
 {
     public int EventId { get; set; }

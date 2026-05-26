@@ -6,7 +6,11 @@ using System.Security.Claims;
 using System.Text;
 
 namespace EventMaster.Api.Security;
-
+/// <summary>
+/// Provides functionality to create JSON Web Tokens (JWT) for authenticated users in the application. This service takes user information and generates a JWT that can be used for authentication and authorization purposes in subsequent requests.
+/// The CreateToken method accepts a user object (which should contain properties such as user ID, username, role, email, and display name) and constructs a JWT with claims based on this information. The token is signed using a symmetric security key derived from the configuration options provided through the JwtOptions class.
+/// The generated token includes claims for the user's ID, username, role, email, and display name, and it is set to expire after a specified duration defined in the JwtOptions. This service is typically used in the authentication workflow of the application, where after validating user credentials, a JWT is created and returned to the client for use in authenticating future requests.
+/// </summary>
 public class JwtTokenService
 {
     private readonly JwtOptions _opts;

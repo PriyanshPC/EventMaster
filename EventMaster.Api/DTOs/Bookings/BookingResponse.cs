@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Bookings;
-
+/// <summary>
+/// Response model for a booking, containing essential information about the booking.
+/// </summary>
 public class BookingResponse
 {
     public int BookingId { get; set; }

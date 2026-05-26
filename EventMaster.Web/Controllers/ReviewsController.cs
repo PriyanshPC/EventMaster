@@ -8,6 +8,16 @@ using System.Security.Claims;
 namespace EventMaster.Web.Controllers;
 
 [Authorize]
+/// <summary>
+/// Handles user reviews for events, including displaying the review submission form and processing review submissions. Integr
+/// ates with the Reviews API to check eligibility for submitting a review (only customers who have attended a completed occurrence can review) and to submit new reviews. Also retrieves existing reviews for display on the review submission page.
+/// The Create GET action checks if the user is eligible to submit a review for the specified event
+/// occurrence, and if so, retrieves the occurrence details and existing reviews to build a view model for the review submission page. If the user is not eligible, they are redirected back to the event details page with a notification.
+/// The Create POST action validates the user's eligibility again, then submits the review to the Reviews API
+/// using the JWT from the user's claims for authentication. It provides feedback on the success or failure of the review submission and redirects appropriately.
+/// The SetNotification method is a helper to set TempData for displaying notifications to the user.
+/// This controller ensures that only authorized customers can submit reviews and that they can only review events they have attended, maintaining the integrity of the review system. It also provides a seamless user experience by integrating with the Events API to show relevant event information on the review page.
+/// </summary>
 public class ReviewsController : Controller
 {
     private readonly EventsApiClient _eventsApi;

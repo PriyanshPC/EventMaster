@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Bookings;
-
+/// <summary>
+/// Request model for creating a booking.
+/// </summary>
 public class BookingCreateRequest
 {
     public int OccurrenceId { get; set; }

@@ -1,5 +1,7 @@
 namespace EventMaster.Api.DTOs.Events;
-
+/// <summary>
+/// Request model for creating a new event series, which includes multiple occurrences of an event.
+/// </summary>
 public class CreateEventSeriesRequest
 {
     public string Name { get; set; } = "";

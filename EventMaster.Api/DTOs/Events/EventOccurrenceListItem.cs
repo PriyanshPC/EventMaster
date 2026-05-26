@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Events;
-
+/// <summary>
+/// Response model for listing event occurrences, used in endpoints that return a list of events with their basic details. This model includes information about the event, its occurrence, and the venue, but does not include detailed descriptions or organizer information.
+/// </summary>
 public class EventOccurrenceListItem
 {
     public int OccurrenceId { get; set; }

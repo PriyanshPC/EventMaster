@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Auth;
-
+/// <summary>
+/// Represents the request to register a new user, containing details such as name, age, phone number, email, username, and password.
+/// </summary>
 public class RegisterRequest
 {
     public string Name { get; set; } = "";

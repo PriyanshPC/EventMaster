@@ -1,6 +1,9 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-
+/// <summary>
+/// This file contains the PaymentEmulatorStore class, which is responsible for reading and writing mock
+/// payment data to a JSON file. It also includes the PaymentMockData class, which defines the structure of the mock data, and the CardDetail and Coupon classes, which represent individual card details and coupons respectively. This is used for simulating payment processing in a development environment without integrating with real payment gateways.
+/// </summary>
 namespace EventMaster.Api.DTOs.Payments;
 
 public class PaymentEmulatorStore

@@ -15,6 +15,9 @@ namespace EventMaster.Api.Controllers;
 [Route("api/events")]
 public class EventsController : ControllerBase
 {
+    /// <summary>
+    /// Controller for managing events and occurrences.
+    /// </summary>
     private readonly EventMasterDbContext _db;
     private readonly CurrentUser _me;
     private readonly IWebHostEnvironment _env;
@@ -32,6 +35,16 @@ public class EventsController : ControllerBase
     // PUBLIC (anonymous) endpoints
     // -----------------------------
 
+/// <summary>
+/// Get upcoming events with optional filtering by category, city, search query, and date range.
+/// Returns events with their upcoming occurrences (status=Scheduled and date >= today).
+/// </summary>
+/// <param name="category"></param>
+/// <param name="city"></param>
+/// <param name="q"></param>
+/// <param name="from"></param>
+/// <param name="to"></param>
+/// <returns></returns>
     // GET api/events/upcoming?category=Music&city=Toronto&q=party&from=2026-02-01&to=2026-03-01
     // Returns EVENTS with their UPCOMING occurrences
     [HttpGet("upcoming")]
@@ -114,6 +127,15 @@ public class EventsController : ControllerBase
         return Ok(result);
     }
 
+/// <summary>
+/// Get upcoming occurrences for a category (flattened list). Optional filtering by city, search query, and date range.
+/// </summary>
+/// <param name="category"></param>
+/// <param name="city"></param>
+/// <param name="q"></param>
+/// <param name="from"></param>
+/// <param name="to"></param>
+/// <returns></returns>
     // GET api/events/occurrences/upcoming?category=Music
     // Returns UPCOMING occurrences for a category (flattened list)
     [HttpGet("occurrences/upcoming")]
@@ -168,6 +190,11 @@ public class EventsController : ControllerBase
         return Ok(result);
     }
 
+/// <summary>
+/// Get upcoming occurrences for a specific event. Optional filtering by date range. Returns 404 if event doesn't exist (even if it has no occurrences).
+/// </summary>
+/// <param name="eventId"></param>
+/// <returns></returns>
     // GET api/events/{eventId}/occurrences (upcoming occurrences for the event)
     [HttpGet("{eventId:int}/occurrences")]
     [AllowAnonymous]
@@ -204,6 +231,12 @@ public class EventsController : ControllerBase
         return Ok(occs);
     }
 
+/// <summary>
+/// Get details for a specific occurrence, including event + venue + organizer info. Returns 404 if occurrence doesn't exist or doesn't belong to the event.
+/// </summary>
+/// <param name="eventId"></param>
+/// <param name="occurrenceId"></param>
+/// <returns></returns>
     // GET api/events/{eventId}/occurrences/{occurrenceId}
     // Includes event + venue + organizer details
     [HttpGet("{eventId:int}/occurrences/{occurrenceId:int}")]
@@ -254,6 +287,11 @@ public class EventsController : ControllerBase
         return Ok(item);
     }
 
+/// <summary>
+/// Get event image file if exists, otherwise 404. Public endpoint (no auth) since images are shown on public pages.
+/// </summary>
+/// <param name="eventId"></param>
+/// <returns></returns>
     // GET api/events/{eventId}/image
     // Returns event image file if exists, otherwise 404. Public endpoint (no auth) since images are shown on public pages.
     [HttpGet("{eventId:int}/image")]
@@ -300,7 +338,11 @@ public class EventsController : ControllerBase
     // -----------------------------
     // ORGANIZER endpoints
     // -----------------------------
-
+/// <summary>
+/// Create a new event series with one or more occurrences. If an event with the same name+category already exists for the organizer, it will be updated instead of creating a duplicate. Image can be uploaded as part of the request (multipart/form-data) and will be processed with the same rules as the separate image upload endpoint. Returns the created/updated event with occurrence IDs.
+/// </summary>
+/// <param name="req"></param>
+/// <returns></returns>
     // POST api/events
     // Create event (Organizer only). Image file name auto-set: event_01.png
     [HttpPost]
@@ -335,6 +377,12 @@ public class EventsController : ControllerBase
         });
     }
 
+/// <summary>
+/// Upload or replace event image. Validates + resizes to 300x300 with padding. Saves as PNG under wwwroot/images/event_01.png. No DB updates for now (per your request), just file storage. Returns info about saved file and paths for verification/debugging.
+/// </summary>
+/// <param name="eventId"></param>
+/// <param name="request"></param>
+/// <returns></returns>
     // POST api/events/{eventId}/image
     // Upload or replace event image. Validates + resizes to 300x300 with padding. Saves as PNG under wwwroot/images/event_01.png
     [HttpPost("{eventId:int}/image")]
@@ -396,12 +444,21 @@ public class EventsController : ControllerBase
         });
     }
 
+/// <summary>
+/// Helper to get canonical images directory. This is where we expect all event images to be stored. We can have fallback logic in the image retrieval endpoint to check legacy paths for backward compatibility, but all new uploads should go to this canonical location. This keeps things organized and makes it easier to manage files in the future (e.g. if we want to add a CDN or cloud storage later, we have a single source of truth for where images are stored). The method also ensures the directory exists before saving files.
+/// </summary>
+/// <returns></returns>
     private string GetCanonicalImagesDirectory()
     {
         var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         return Path.Combine(webRoot, "images");
     }
 
+/// <summary>
+/// Helper to resolve event image path with fallback logic. First checks the canonical images directory for the expected filename. If not found, falls back to the legacy /images/covers directory (where we used to store images before implementing the new upload endpoint). This allows us to serve existing images that were uploaded before without forcing an immediate migration of all files. It also logs a warning when falling back to the legacy path, so we can monitor how many requests are still hitting the old location and plan a cleanup strategy later. If neither location has the file, returns null and the controller can return a 404.
+/// </summary>
+/// <param name="fileName"></param>
+/// <returns></returns>
     private string? ResolveEventImagePathWithFallback(string fileName)
     {
         var canonicalPath = Path.Combine(GetCanonicalImagesDirectory(), fileName);

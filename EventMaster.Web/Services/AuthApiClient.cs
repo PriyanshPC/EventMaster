@@ -5,7 +5,9 @@ using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace EventMaster.Web.Services;
-
+/// <summary>
+/// Client for calling authentication-related API endpoints, such as login, registration, profile management, and password changes.
+/// </summary>
 public class AuthApiClient
 {
     private readonly HttpClient _http;

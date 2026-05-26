@@ -4,7 +4,9 @@ using System.Net.Http.Json;
 using System.IO;
 
 namespace EventMaster.Web.Services;
-
+/// <summary>
+/// Client for calling event-related API endpoints, such as fetching upcoming events, fetching event details, creating new event series, and canceling event occurrences.
+/// </summary>
 public class EventsApiClient
 {
     private readonly HttpClient _http;

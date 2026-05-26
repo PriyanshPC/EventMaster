@@ -1,5 +1,7 @@
 namespace EventMaster.Web.Models;
-
+/// <summary>
+/// ViewModel for the customer dashboard page, which includes the user's profile settings and lists of their upcoming and past bookings. Contains properties for the active tab (bookings or settings), user profile information, lists of upcoming and past bookings with relevant details for each booking, and optional message and error properties for displaying feedback to the user. This ViewModel is populated by calling the Auth API to fetch the user's profile information and the Bookings API to fetch their bookings, which are then categorized into upcoming and past based on the current date. The ViewModel is used to render the customer dashboard page with all the necessary information and controls for managing their bookings and profile settings.
+/// </summary>
 public class CustomerDashboardViewModel
 {
     public string ActiveTab { get; set; } = "bookings";

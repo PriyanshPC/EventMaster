@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Api.DTOs.Events;
-
+/// <summary>
+/// Request model for creating a new occurrence of an existing event. This is used when adding a new date/time/venue for an event that already exists.
+/// </summary>
 public class CreateOccurrenceRequest
 {
     public int EventId { get; set; }

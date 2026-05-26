@@ -7,7 +7,18 @@ using System.Globalization;
 using System.Security.Claims;
 
 namespace EventMaster.Web.Controllers;
-
+/// <summary>
+/// Provides dashboard views and actions for both customers and organizers. Customers can view their upcoming and past bookings, update profile settings, and see booking details. Organizers can manage their events, view pending reviews, reply to reviews, and cancel occurrences. Both dashboards rely on the Auth API to get user info, the Bookings API to retrieve booking data, the Events API for event details, and the Reviews API for review management. The controller also handles form submissions for updating profiles, uploading new events (organizers), canceling bookings (customers), and canceling occurrences (organizers). It uses TempData to provide feedback notifications to users after actions are performed.
+/// The Customer dashboard shows a list of upcoming and past bookings with details like event name, date/time, venue, and booking status. The Organizer dashboard displays the organizer's events with occurrence details and pending reviews that they can reply to. Both dashboards have a settings tab where users can update their profile information and change their password. The controller ensures that only authenticated users can access these dashboards and performs necessary checks before allowing actions like canceling bookings or occurrences. It also handles the creation of new events by organizers, including validating input and providing feedback on the success or failure of the event creation process.
+/// Overall, this controller serves as the central hub for user interactions related to their bookings and events, providing a seamless experience for both customers and organizers while integrating with multiple backend APIs to manage data and actions effectively.
+/// The main actions include:
+/// - Customer Dashboard: Displays upcoming and past bookings, allows profile updates, and shows booking details
+/// - Organizer Dashboard: Lists organizer's events, allows event creation, shows pending reviews, and enables replying to reviews
+/// - Booking Details: Provides detailed information about a specific booking and allows cancellation if applicable
+/// - Event Creation: Enables organizers to create new events with multiple occurrences, including validation and feedback
+/// - Profile Update: Allows users to update their email, phone, or password with appropriate validation and feedback
+/// The controller ensures that all actions are protected and only accessible to authenticated users, with role-based access control for organizer-specific actions. It also uses TempData to communicate the results of actions back to the user through notifications on the dashboard views.
+/// </summary>
 [Authorize]
 public class DashboardController : Controller
 {

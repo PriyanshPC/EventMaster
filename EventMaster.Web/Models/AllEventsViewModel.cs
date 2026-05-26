@@ -1,5 +1,7 @@
 ﻿namespace EventMaster.Web.Models;
-
+/// <summary>
+/// ViewModel for the "All Events" page, which displays a list of upcoming event occurrences with filtering options. Contains properties for the page title, filter criteria (location, date range, category, search query), dropdown options for locations and categories, and the list of event occurrence cards to display as results.
+/// </summary>
 public class AllEventsViewModel
 {
     public string PageTitle { get; set; } = "All Events";

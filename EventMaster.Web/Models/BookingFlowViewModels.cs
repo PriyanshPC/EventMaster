@@ -2,7 +2,9 @@ using EventMaster.Web.Services.ApiDtos;
 using System.ComponentModel.DataAnnotations;
 
 namespace EventMaster.Web.Models;
-
+/// <summary>
+/// ViewModels related to the booking flow, including the initial booking page where users select quantity and seats, the payment page where users enter payment details, and the review creation page where users can submit reviews for events they've attended. These ViewModels contain all the necessary properties to display event details, capture user input for bookings and payments, and show existing reviews along with a form for submitting new reviews. They are populated by calling the relevant API endpoints to fetch event occurrence details, existing reviews, and to process bookings and payments. The ViewModels also include data annotations for validating user input on the forms.
+/// </summary>
 public class BookingIntentModel
 {
     public int EventId { get; set; }
